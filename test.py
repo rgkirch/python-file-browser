@@ -33,11 +33,11 @@ class App(Frame):
         self.btn_quit.grid( column=0, row=1 )
         self.lbx_dirs.grid()
 
-        #for item in sorted(os.listdir(".")):
-        #    self.listbox.insert(END, item)
+        for item in sorted(os.listdir(".")):
+            self.lbx_dirs.insert(END, item)
 
     def hello( self ):
-        print "hello"
+        self.title_text = "hello"
 
 root = Tk()
 app = App(root)

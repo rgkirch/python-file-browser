@@ -1,0 +1,25 @@
+{action 0} could be a mouse[doubleclick] or key_pressed[enter]
+selected items should be highlighted in a different color (defaults included with tkinter listboxes)
+
+basic operation goals:
+	view files and folders
+	navigate folders
+	sort files and folders by (date created, last modified, file size, name)
+	toggle hide system files/folders (begin with . on linux)
+	copy file/folder
+	move file/folder
+	create archive from selection
+	preview pictures
+extended:
+	find files by search (search file names in current dir)
+
+
+view files in current directory
+{action 0} on a directory in the current view will take you into the directory and display the files and dirs in that dir
+{action 0} on a file in the current view call the default action for the os on that file (open it with default program)
+	it could be pretty easy to allow the program itself to display the picture (not easy for eg pdf)
+if i hit [down] then the first item should become selected and more presses of [down] move the selection down (likewise for up)
+
+stretch goal:
+if i hold [ctrl] and press [down] then the previously selected item should remain selected and a new select box (outline) will move down
+
