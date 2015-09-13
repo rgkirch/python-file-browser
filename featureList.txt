@@ -5,6 +5,7 @@ basic operation goals:
 	view files and folders
 	navigate folders
 	sort files and folders by (date created, last modified, file size, name)
+	show folders first/show files first/ignore file vs folder (all mixed together)
 	toggle hide system files/folders (begin with . on linux)
 	copy file/folder
 	move file/folder
@@ -14,6 +15,11 @@ easy extended:
 	download files (provided address, wget (easy) also maybe have some intellegence about resuming a download or chose location based on downloaded item i.e. last item downloaded from domain "canvas.com" went into "usf/classes" so lets open that folder)
 extended:
 	find files by search (search file names in current dir)
+
+screens needed
+	main screed of the file browser
+		a large listbox on the right side, shows files and folders
+
 
 
 view files in current directory

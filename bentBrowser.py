@@ -1,17 +1,16 @@
+# I dream of making my own os one day. I will call it Bent os.
+
 from Tkinter import *
 import os
 
-class App(Frame):
-    def __init__(self, master):
-        frame = Frame(master)
-        frame.grid()
-        #self.grid()
-
-        top = Frame(frame)
+# main widget
+class File_Explorer():
+    def __init__(self, parent):
+        top = Frame( parent )
         top.grid( row=0, columnspan=2 )
-        left_half = Frame(frame)
+        left_half = Frame( parent )
         left_half.grid( column=0, row=1, sticky=N )
-        right_half = Frame(frame)
+        right_half = Frame( parent )
         right_half.grid( column=1, row=1 )
 
         self.title_text = Message( top,
@@ -19,25 +18,23 @@ class App(Frame):
 
         self.btn_quit = Button( left_half,
                 text="QUIT",
-                command=frame.quit )
-
-        self.btn_hello = Button( left_half,
-                text="hello",
-                command=self.hello )
+                command=parent.quit )
 
         self.lbx_dirs = Listbox( right_half,
                 selectmode=EXTENDED )
 
         self.title_text.grid()
-        self.btn_hello.grid( column=0, row=0 )
         self.btn_quit.grid( column=0, row=1 )
         self.lbx_dirs.grid()
-
+    def update(self):
         for item in sorted(os.listdir(".")):
             self.lbx_dirs.insert(END, item)
 
-    def hello( self ):
-        self.title_text = "hello"
+class App():
+    def __init__(self, root):
+        frame = Frame(root)
+        frame.grid()
+        fe = File_Explorer( frame )
 
 root = Tk()
 app = App(root)
