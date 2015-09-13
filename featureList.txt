@@ -9,7 +9,9 @@ basic operation goals:
 	copy file/folder
 	move file/folder
 	create archive from selection
+easy extended:
 	preview pictures
+	download files (provided address, wget (easy) also maybe have some intellegence about resuming a download or chose location based on downloaded item i.e. last item downloaded from domain "canvas.com" went into "usf/classes" so lets open that folder)
 extended:
 	find files by search (search file names in current dir)
 
