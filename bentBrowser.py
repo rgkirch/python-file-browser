@@ -5,27 +5,16 @@ import Tkinter as tk
 import os
 
 # main widget
-class File_Explorer(  ):
+class Listing( object ):
     def __init__(self, parent):
-        top = tk.Frame( parent )
-        top.grid( row=0, columnspan=2 )
-        left_half = tk.Frame( parent )
-        left_half.grid( column=0, row=1, sticky=tk.N )
-        right_half = tk.Frame( parent )
-        right_half.grid( column=1, row=1 )
-
-        self.title_text = tk.Message( top,
+        self.title_text = tk.Message( parent,
                 text="bent file explorer" )
 
-        self.btn_quit = tk.Button( left_half,
-                text="QUIT",
-                command=parent.quit )
 
-        self.lbx_dirs = tk.Listbox( right_half,
+        self.lbx_dirs = tk.Listbox( parent,
                 selectmode=tk.EXTENDED )
 
         self.title_text.grid()
-        self.btn_quit.grid( column=0, row=1 )
         self.lbx_dirs.grid()
     def update(self):
         print( "update" )
@@ -35,9 +24,17 @@ class File_Explorer(  ):
 class BentExplorerApp( tk.Tk ):
     def __init__( self, *args, **kwargs ):
         tk.Tk.__init__( self, *args, **kwargs )
-        frame = tk.Frame( self )
-        frame.grid()
-        fe = File_Explorer( frame )
+        frame = tk.Frame()
+        frame.grid( row=0 )
+        bottom = tk.Frame()
+        bottom.grid( row=10 )
+
+        btn_quit = tk.Button( bottom,
+                text="QUIT",
+                command=self.quit )
+        btn_quit.grid()
+
+        widget_file_explorer = Listing( frame )
 
 app = BentExplorerApp()
 app.mainloop()
