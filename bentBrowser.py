@@ -16,10 +16,9 @@ class Explorer:
     Allows the user to navigate the file tree.
     Uses two widgets to convey this: Explorer and List.
     """
-    def __init__(self, parent):
-        self.widget_list = List( parent )
-
-        self.widget_commandBar = CommandBar( parent )
+    def __init__(self, parent_frame ):
+        self.widget_list = List( parent_frame, self )
+        self.widget_commandBar = CommandBar( parent_frame, self )
 
         self.widget_list.grid( row=55 )
         self.widget_commandBar.grid( row=99 )
@@ -43,11 +42,11 @@ class CommandBar:
     # dict = {s:{u:{b:{_:{b:{r:{a:{d:{},v:{o:{}}}}}}}},t:{a:{s:{h:{}}}}}}
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
-    def __init__( self, frame ):
+    def __init__( self, parent_frame, parent_object ):
         self.command_history = [""]
         self.command_history_index = 0
         self.command_history_length = 0
-        self.tkEntry = tk.Entry( frame )
+        self.tkEntry = tk.Entry( parent_frame )
 
         self.tkEntry.delete( 0, tk.END )
         self.tkEntry.insert( 0, self.command_history[ self.command_history_index ] )
@@ -59,9 +58,6 @@ class CommandBar:
 
         #print( self.tkEntry.grid_info() )
 
-    def grid( self, *args, **kwargs ):
-        self.tkEntry.grid( row=kwargs[ "row" ] )
-
     def save_command( self, event ):
         """record entered command in history, reset history index"""
         text_command = self.tkEntry.get()
@@ -70,6 +66,9 @@ class CommandBar:
             # replace len(commandhis) with saved value for performance nicrease
             self.command_history[ -1 : len( self.command_history ) ] = [ text_command, "" ]
             self.command_history_index = len( self.command_history ) - 1
+
+    def grid( self, **kwargs ):
+        self.tkEntry.grid( **kwargs )
 
     def display_previous_command( self, event ):
         if self.command_history_index > 0:
@@ -89,14 +88,14 @@ class List:
     """
     A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
     """
-    def __init__( self, parent ):
+    def __init__( self, parent_frame, parent_object ):
         self.contents = []
-        self.tkListbox = tk.Listbox( parent,
+        self.tkListbox = tk.Listbox( parent_frame,
                 selectmode=tk.EXTENDED )
         self.tkListbox.grid()
 
-    def grid( self, *args, **kwargs ):
-        self.tkListbox.grid( row=kwargs[ "row" ] )
+    def grid( self, **kwargs ):
+        self.tkListbox.grid( **kwargs )
 
     def display_list( self, list ):
         self.tkListbox.delete( 0, tk.END )
