@@ -5,28 +5,24 @@ import Tkinter as tk
 import tkMessageBox
 import os
 
+# not used
 class Vimregex( object ):
     """implement something like 'vimregex.com'"""
     vimregex_keywords = ["substitute"]
 
 # main widget
 class Explorer:
-"""
-Allows the user to navigate the file tree.
-Uses two widgets to convey this: Explorer and List.
-"""
-    # save the commands entered in the command_bar
+    """
+    Allows the user to navigate the file tree.
+    Uses two widgets to convey this: Explorer and List.
+    """
     def __init__(self, parent):
-        self.lbx_dirs = tk.Listbox( parent,
-                selectmode=tk.EXTENDED )
-        self.lbx_dirs.grid( row=0 )
+        self.frame_list = Frame( parent )
+        self.widget_list = List( self )
 
-        self.command_bar = CommandBar( self )
-        self.command_bar_frame = tk.Entry( parent )
-        self.command_bar.bind( "<Return>", self.run_command )
-        self.command_bar.bind( "<Up>", self.display_previous_command )
-        self.command_bar.bind( "<Down>", self.display_next_command )
-        self.command_bar.grid( row=10 )
+        self.frame_commandBar = Frame( parent )
+        self.widget_commandBar = CommandBar( self )
+
 
         self.update()
     def hello( self ):
@@ -68,11 +64,11 @@ Uses two widgets to convey this: Explorer and List.
         print( self.lbx_dirs.curselection() )
 
 class CommandBar:
-"""
-The commandbar will allow the user to enter longer command strnigs.
-If the user wants to enter a vim style substitution command, the user may do so here.
-The user may also use the <Up><Down> keys to view previous commands
-"""
+    """
+    The commandbar will allow the user to enter longer command strnigs.
+    If the user wants to enter a vim style substitution command, the user may do so here.
+    The user may also use the <Up><Down> keys to view previous commands
+    """
     # because there is a separate object for CommandBar each instance will have its own command history
     # dict = {rename:[0,3],ls:[1,5,6],cd:[2,4]}
     #   ls was the last one entered
@@ -83,12 +79,21 @@ The user may also use the <Up><Down> keys to view previous commands
     # dict = {a:{a:{},b:{}},b:{}}
     command_history = []
     command_history_index = 0
-    def __init__( self, parent ):
+    def __init__( self, widget_parent ):
         self.command_history = []
+        self.command_bar = CommandBar( self )
+        self.command_bar_frame = tk.Entry( parent )
+        self.command_bar.bind( "<Return>", self.run_command )
+        self.command_bar.bind( "<Up>", self.display_previous_command )
+        self.command_bar.bind( "<Down>", self.display_next_command )
+        self.command_bar.grid( row=10 )
 class List:
-"""
-A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
-"""
+    """
+    A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
+    """
+        self.lbx_dirs = tk.Listbox( parent,
+                selectmode=tk.EXTENDED )
+        self.lbx_dirs.grid( row=0 )
     
 class BentExplorerApp( tk.Tk ):
     def __init__( self, *args, **kwargs ):
