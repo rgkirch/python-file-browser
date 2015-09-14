@@ -21,14 +21,13 @@ class Explorer:
     """
     def __init__(self, parent_frame ):
         self.widget_list = List( master=parent_frame )
-        self.widget_commandBar = CommandBar( master=parent_frame )
+        self.widget_commandBar = CommandBar( parent_frame, self )
 
         self.widget_list.grid( row=55 )
         self.widget_commandBar.grid( row=99 )
 
-    def update( self, *args, **kw ):
-        print( "hello" )
-        self.widget_list.update( args )
+    def update( self, command ):
+        self.widget_list.update( command )
 
     # TODO set size limit for command_history
     # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
@@ -49,16 +48,15 @@ class CommandBar( tk.Entry ):
     # dict = {s:{u:{b:{_:{b:{r:{a:{d:{},v:{o:{}}}}}}}},t:{a:{s:{h:{}}}}}}
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
-    def __init__( self, master=None, cnf={}, **kw ):
-        tk.Widget.__init__(self, master, 'entry', cnf, kw)
-        
-        #self.parent_object = 
+    def __init__( self, parent_frame, parent_object ):
+        tk.Entry.__init__(self)
+        self.parent_object = parent_object
         self.command_history = [""]
         self.command_history_index = 0
         self.command_history_length = 0
         #self.tkEntry = tk.Entry( master )
 
-        self.delete( 0, tk.END )
+        self.delete( 0 )
         self.insert( 0, self.command_history[ self.command_history_index ] )
 
         self.bind( "<Return>", self.save_command)
@@ -101,9 +99,9 @@ class List( tk.Listbox):
                 #selectmode=tk.EXTENDED )
         self.grid()
 
-    def update( self, args, sec ):
-        self.contents.append( args )
-        self.insert( tk.END, args )
+    def update( self, command ):
+        self.contents.append( command )
+        self.insert( tk.END, command )
 
     def display_list( self, list ):
         self.delete( 0, tk.END )
