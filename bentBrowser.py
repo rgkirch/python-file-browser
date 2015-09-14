@@ -5,8 +5,13 @@ import Tkinter as tk
 import tkMessageBox
 import os
 
+class Vimregex( object ):
+    """implement something like 'vimregex.com'"""
+    vimregex_keywords = ["substitute"]
+
 # main widget
 class Listing( object ):
+    # save the commands entered in the command_bar
     command_history = []
     command_history_index = 0
     def __init__(self, parent):
@@ -17,21 +22,43 @@ class Listing( object ):
         self.command_bar = tk.Entry( parent )
         self.command_bar.bind( "<Return>", self.run_command )
         self.command_bar.bind( "<Up>", self.display_previous_command )
+        self.command_bar.bind( "<Down>", self.display_next_command )
         self.command_bar.grid( row=10 )
 
         self.update()
+
+    # TODO set size limit for command_history
+    # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
+    #       example, i enter the command 'renam' but don't hit enter, i hit <Up> <Down> and still see 'renam'
+    
     def run_command( self, event ):
-        "record entered command in history, reset history index, and run command"
-        print( self.command_bar.get() )
-        self.command_history.append( self.command_bar.get() )
-        self.command_history_index = len( self.command_history )
+        """record entered command in history, reset history index, and run command"""
+        action = self.command_bar.get()
+        print( action )
+        self.command_history.append( action )
+        # TODO do something with action
+        self.command_history_index = len( self.command_history ) - 1
         self.command_bar.delete( 0, tk.END )
+
     def display_previous_command( self, event ):
-        pass
+        if self.command_history_index > 0:
+            self.command_history_index -= 1
+        self.insert_command()
+
+    def display_next_command( self, event ):
+        if self.command_history_index < len( self.command_history ) - 1:
+            self.command_history_index += 1
+        self.insert_command()
+
+    def insert_command( self ):
+        self.command_bar.delete( 0, tk.END )
+        self.command_bar.insert( 0, self.command_history[ self.command_history_index ] )
+
     def update(self):
         self.lbx_dirs.delete( 0, tk.END )
         for item in sorted(os.listdir( os.path.expanduser("~") + "/" )):
             self.lbx_dirs.insert(tk.END, item)
+
     def debug_print_selected( self ):
         print( self.lbx_dirs.curselection() )
 

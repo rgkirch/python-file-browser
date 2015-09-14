@@ -11,10 +11,12 @@ basic operation goals:
 	move file/folder
 	create archive from selection
 easy extended:
+	<C-w> (ctrl-w) [hjkl] to switch focus to another widget
 	preview pictures
 	download files (provided address, wget (easy) also maybe have some intellegence about resuming a download or chose location based on downloaded item i.e. last item downloaded from domain "canvas.com" went into "usf/classes" so lets open that folder)
 extended:
 	find files by search (search file names in current dir)
+	rename files by vimregex (:%s/vi/VIM/gc)
 
 screens needed
 	main screed of the file browser
