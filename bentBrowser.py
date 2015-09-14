@@ -17,51 +17,19 @@ class Explorer:
     Uses two widgets to convey this: Explorer and List.
     """
     def __init__(self, parent):
-        self.frame_list = Frame( parent )
-        self.widget_list = List( self )
+        self.frame_list = tk.Frame( parent )
+        self.widget_list = List( self.frame_list )
 
-        self.frame_commandBar = Frame( parent )
-        self.widget_commandBar = CommandBar( self )
+        self.frame_commandBar = tk.Frame( parent )
+        self.widget_commandBar = CommandBar( self.frame_commandBar )
 
-
-        self.update()
-    def hello( self ):
-        print( "hello" )
+        self.frame_list.grid( row=55 )
+        self.frame_commandBar.grid( row=99 )
 
     # TODO set size limit for command_history
     # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
     #       example, i enter the command 'renam' but don't hit enter, i hit <Up> <Down> and still see 'renam'
     
-    def run_command( self, event ):
-        """record entered command in history, reset history index, and run command"""
-        action = self.command_bar.get()
-        print( action )
-        self.command_history.append( action )
-        # TODO do something with action
-        self.command_history_index = len( self.command_history ) - 1
-        self.command_bar.delete( 0, tk.END )
-
-    def display_previous_command( self, event ):
-        if self.command_history_index > 0:
-            self.command_history_index -= 1
-        self.insert_command()
-
-    def display_next_command( self, event ):
-        if self.command_history_index < len( self.command_history ) - 1:
-            self.command_history_index += 1
-        self.insert_command()
-
-    def insert_command( self ):
-        self.command_bar.delete( 0, tk.END )
-        self.command_bar.insert( 0, self.command_history[ self.command_history_index ] )
-
-    def update(self):
-        self.lbx_dirs.delete( 0, tk.END )
-        for item in sorted(os.listdir( os.path.expanduser("~") + "/" )):
-            self.lbx_dirs.insert(tk.END, item)
-
-    def debug_print_selected( self ):
-        print( self.lbx_dirs.curselection() )
 
 class CommandBar:
     """
@@ -77,24 +45,60 @@ class CommandBar:
     # dict = {s:{u:{b:{_:{b:{r:{a:{d:{},v:{o:{}}}}}}}},t:{a:{s:{h:{}}}}}}
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
-    command_history = []
-    command_history_index = 0
-    def __init__( self, widget_parent ):
-        self.command_history = []
-        self.command_bar = CommandBar( self )
-        self.command_bar_frame = tk.Entry( parent )
-        self.command_bar.bind( "<Return>", self.run_command )
-        self.command_bar.bind( "<Up>", self.display_previous_command )
-        self.command_bar.bind( "<Down>", self.display_next_command )
-        self.command_bar.grid( row=10 )
+    def __init__( self, frame ):
+        self.command_history = [""]
+        self.command_history_index = 0
+        self.command_history_length = 0
+        self.tkEntry = tk.Entry( frame )
+
+        self.tkEntry.delete( 0, tk.END )
+        self.tkEntry.insert( 0, self.command_history[ self.command_history_index ] )
+
+        self.tkEntry.bind( "<Return>", self.save_command)
+        self.tkEntry.bind( "<Up>", self.display_previous_command )
+        self.tkEntry.bind( "<Down>", self.display_next_command )
+
+        self.tkEntry.grid()
+
+        #print( self.tkEntry.grid_info() )
+
+    def save_command( self, event ):
+        """record entered command in history, reset history index"""
+        text_command = self.tkEntry.get()
+        if text_command:
+            self.tkEntry.delete( 0, tk.END )
+            # replace len(commandhis) with saved value for performance nicrease
+            self.command_history[ -1 : len( self.command_history ) ] = [ text_command, "" ]
+            self.command_history_index = len( self.command_history ) - 1
+
+    def display_previous_command( self, event ):
+        if self.command_history_index > 0:
+            self.command_history_index -= 1
+        self.insert_command_from_history()
+
+    def display_next_command( self, event ):
+        if self.command_history_index < len( self.command_history ) - 1:
+            self.command_history_index += 1
+        self.insert_command_from_history()
+
+    def insert_command_from_history( self ):
+        self.tkEntry.delete( 0, tk.END )
+        self.tkEntry.insert( 0, self.command_history[ self.command_history_index ] )
+
 class List:
     """
     A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
     """
-        self.lbx_dirs = tk.Listbox( parent,
+    def __init__( self, parent ):
+        self.contents = []
+        self.tkListbox = tk.Listbox( parent,
                 selectmode=tk.EXTENDED )
-        self.lbx_dirs.grid( row=0 )
-    
+        self.tkListbox.grid()
+
+    def display_list( self, list ):
+        self.tkListbox.delete( 0, tk.END )
+        self.tkListbox.insert( 0, list )
+
 class BentExplorerApp( tk.Tk ):
     def __init__( self, *args, **kwargs ):
         tk.Tk.__init__( self, *args, **kwargs )
