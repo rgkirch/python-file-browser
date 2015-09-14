@@ -20,14 +20,15 @@ class Explorer:
     Uses two widgets to convey this: Explorer and List.
     """
     def __init__(self, parent_frame ):
-        self.widget_list = List( parent_frame, self )
-        self.widget_commandBar = CommandBar( parent_frame, self )
+        self.widget_list = List( master=parent_frame )
+        self.widget_commandBar = CommandBar( master=parent_frame )
 
         self.widget_list.grid( row=55 )
         self.widget_commandBar.grid( row=99 )
 
-    def update( self, command ):
-        self.widget_list.update( command )
+    def update( self, *args, **kw ):
+        print( "hello" )
+        self.widget_list.update( args )
 
     # TODO set size limit for command_history
     # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
@@ -48,32 +49,31 @@ class CommandBar( tk.Entry ):
     # dict = {s:{u:{b:{_:{b:{r:{a:{d:{},v:{o:{}}}}}}}},t:{a:{s:{h:{}}}}}}
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
-    def __init__( self, parent_frame, parent_object ):
-        self.parent_object = parent_object
+    def __init__( self, master=None, cnf={}, **kw ):
+        tk.Widget.__init__(self, master, 'entry', cnf, kw)
+        
+        #self.parent_object = 
         self.command_history = [""]
         self.command_history_index = 0
         self.command_history_length = 0
-        self.tkEntry = tk.Entry( parent_frame )
+        #self.tkEntry = tk.Entry( master )
 
-        self.tkEntry.delete( 0, tk.END )
-        self.tkEntry.insert( 0, self.command_history[ self.command_history_index ] )
+        self.delete( 0, tk.END )
+        self.insert( 0, self.command_history[ self.command_history_index ] )
 
-        self.tkEntry.bind( "<Return>", self.save_command)
-        self.tkEntry.bind( "<Up>", self.display_previous_command )
-        self.tkEntry.bind( "<Down>", self.display_next_command )
+        self.bind( "<Return>", self.save_command)
+        self.bind( "<Up>", self.display_previous_command )
+        self.bind( "<Down>", self.display_next_command )
 
     def save_command( self, event ):
         """record entered command in history, reset history index"""
-        text_command = self.tkEntry.get()
+        text_command = self.get()
         if text_command:
-            self.tkEntry.delete( 0, tk.END )
+            self.delete( 0, tk.END )
             # replace len(commandhis) with saved value for performance nicrease
             self.command_history[ -1 : len( self.command_history ) ] = [ text_command, "" ]
             self.command_history_index = len( self.command_history ) - 1
             self.parent_object.update( text_command )
-
-    def grid( self, **kwargs ):
-        self.tkEntry.grid( **kwargs )
 
     def display_previous_command( self, event ):
         if self.command_history_index > 0:
@@ -86,30 +86,28 @@ class CommandBar( tk.Entry ):
         self.insert_command_from_history()
 
     def insert_command_from_history( self ):
-        self.tkEntry.delete( 0, tk.END )
-        self.tkEntry.insert( 0, self.command_history[ self.command_history_index ] )
+        self.delete( 0, tk.END )
+        self.insert( 0, self.command_history[ self.command_history_index ] )
 
-#class List( tk.Listbox ):
-class List:
+class List( tk.Listbox):
     """
     A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
     """
-    def __init__( self, parent_frame, parent_object ):
+    def __init__( self, master=None, cnf={}, **kw ):
+        tk.Widget.__init__(self, master, 'listbox', cnf, kw)
+
         self.contents = []
-        self.tkListbox = tk.Listbox( parent_frame,
-                selectmode=tk.EXTENDED )
-        self.tkListbox.grid()
+        #self.tkListbox = tk.Listbox( master,
+                #selectmode=tk.EXTENDED )
+        self.grid()
 
-    def update( self, command ):
-        self.contents.append( command )
-        self.tkListbox.insert( tk.END, command )
-
-    def grid( self, **kwargs ):
-        self.tkListbox.grid( **kwargs )
+    def update( self, args, sec ):
+        self.contents.append( args )
+        self.insert( tk.END, args )
 
     def display_list( self, list ):
-        self.tkListbox.delete( 0, tk.END )
-        self.tkListbox.insert( 0, list )
+        self.delete( 0, tk.END )
+        self.insert( 0, list )
 
 class BentExplorerApp( tk.Tk ):
     def __init__( self, *args, **kwargs ):

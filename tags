@@ -1,0 +1,25 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BentExplorerApp	bentBrowser.py	/^class BentExplorerApp( tk.Tk ):$/;"	c
+CommandBar	bentBrowser.py	/^class CommandBar( tk.Entry ):$/;"	c
+Explorer	bentBrowser.py	/^class Explorer:$/;"	c
+List	bentBrowser.py	/^class List( tk.Listbox):$/;"	c
+Quit	bentBrowser.py	/^    def Quit( self ):$/;"	m	class:BentExplorerApp
+Vimregex	bentBrowser.py	/^class Vimregex( object ):$/;"	c
+__init__	bentBrowser.py	/^    def __init__( self, *args, **kwargs ):$/;"	m	class:BentExplorerApp
+__init__	bentBrowser.py	/^    def __init__( self, master=None, cnf={}, **kw ):$/;"	m	class:CommandBar
+__init__	bentBrowser.py	/^    def __init__( self, master=None, cnf={}, **kw ):$/;"	m	class:List
+__init__	bentBrowser.py	/^    def __init__(self, parent_frame ):$/;"	m	class:Explorer
+app	bentBrowser.py	/^app = BentExplorerApp()$/;"	v
+display_list	bentBrowser.py	/^    def display_list( self, list ):$/;"	m	class:List
+display_next_command	bentBrowser.py	/^    def display_next_command( self, event ):$/;"	m	class:CommandBar
+display_previous_command	bentBrowser.py	/^    def display_previous_command( self, event ):$/;"	m	class:CommandBar
+insert_command_from_history	bentBrowser.py	/^    def insert_command_from_history( self ):$/;"	m	class:CommandBar
+save_command	bentBrowser.py	/^    def save_command( self, event ):$/;"	m	class:CommandBar
+update	bentBrowser.py	/^    def update( self, command ):$/;"	m	class:Explorer
+update	bentBrowser.py	/^    def update( self, command ):$/;"	m	class:List
+vimregex_keywords	bentBrowser.py	/^    vimregex_keywords = ["substitute"]$/;"	v	class:Vimregex
