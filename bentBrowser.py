@@ -10,22 +10,27 @@ class Vimregex( object ):
     vimregex_keywords = ["substitute"]
 
 # main widget
-class Listing( object ):
+class Explorer:
+"""
+Allows the user to navigate the file tree.
+Uses two widgets to convey this: Explorer and List.
+"""
     # save the commands entered in the command_bar
-    command_history = []
-    command_history_index = 0
     def __init__(self, parent):
         self.lbx_dirs = tk.Listbox( parent,
                 selectmode=tk.EXTENDED )
         self.lbx_dirs.grid( row=0 )
 
-        self.command_bar = tk.Entry( parent )
+        self.command_bar = CommandBar( self )
+        self.command_bar_frame = tk.Entry( parent )
         self.command_bar.bind( "<Return>", self.run_command )
         self.command_bar.bind( "<Up>", self.display_previous_command )
         self.command_bar.bind( "<Down>", self.display_next_command )
         self.command_bar.grid( row=10 )
 
         self.update()
+    def hello( self ):
+        print( "hello" )
 
     # TODO set size limit for command_history
     # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
@@ -62,6 +67,29 @@ class Listing( object ):
     def debug_print_selected( self ):
         print( self.lbx_dirs.curselection() )
 
+class CommandBar:
+"""
+The commandbar will allow the user to enter longer command strnigs.
+If the user wants to enter a vim style substitution command, the user may do so here.
+The user may also use the <Up><Down> keys to view previous commands
+"""
+    # because there is a separate object for CommandBar each instance will have its own command history
+    # dict = {rename:[0,3],ls:[1,5,6],cd:[2,4]}
+    #   ls was the last one entered
+    #   <UP>(ls)<Up>(ls)<Up>(cd)
+    # commands entered: sub_brad, sub_bravo, stash
+    # dict = {s:{u:{b:{_:{b:{r:{a:{d:{},v:{o:{}}}}}}}},t:{a:{s:{h:{}}}}}}
+    # aa,ab,b
+    # dict = {a:{a:{},b:{}},b:{}}
+    command_history = []
+    command_history_index = 0
+    def __init__( self, parent ):
+        self.command_history = []
+class List:
+"""
+A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
+"""
+    
 class BentExplorerApp( tk.Tk ):
     def __init__( self, *args, **kwargs ):
         tk.Tk.__init__( self, *args, **kwargs )
@@ -70,17 +98,17 @@ class BentExplorerApp( tk.Tk ):
         self.wm_title("bent file explorer")
         #print( self.winfo_screenwidth() )
         # if you leave out the master widget as seen here, tkinter uses the most recently created root window as master
-        frame = tk.Frame()
-        frame.grid( row=5 )
-        bottom = tk.Frame()
-        bottom.grid( row=10 )
+        frame_main = tk.Frame()
+        frame_main.grid( row=5 )
+        frame_bottom = tk.Frame()
+        frame_bottom.grid( row=10 )
 
-        btn_quit = tk.Button( bottom,
+        btn_quit = tk.Button( frame_bottom,
                 text="QUIT",
                 command=self.Quit )
         btn_quit.grid()
 
-        widget_file_explorer = Listing( frame )
+        widget_file_explorer = Explorer( frame_main )
     def Quit( self ):
         if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
             self.quit()

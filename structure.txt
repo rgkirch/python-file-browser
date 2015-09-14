@@ -1,0 +1,6 @@
+BentExplorerApp is the main program and has as its main widget
+	Explorer - composed of two things, populates the list based on commands from command bar
+		CommandBar - takes input and stores input history
+		List - lists things, user can use keyboard keys to easily navigate the list
+			- mostly cosmetic
+	
