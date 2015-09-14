@@ -1,8 +1,11 @@
 # I dream of making my own os one day. I will call it Bent os.
 
 #from Tkinter import *
-import Tkinter as tk
-import tkMessageBox
+try:
+    import Tkinter as tk
+except ImportError:
+    import tkinter as tk
+#import tkMessageBox
 import os
 
 # not used
@@ -31,7 +34,7 @@ class Explorer:
     #       example, i enter the command 'renam' but don't hit enter, i hit <Up> <Down> and still see 'renam'
     
 
-class CommandBar:
+class CommandBar( tk.Entry ):
     """
     The commandbar will allow the user to enter longer command strnigs.
     If the user wants to enter a vim style substitution command, the user may do so here.
@@ -58,9 +61,6 @@ class CommandBar:
         self.tkEntry.bind( "<Return>", self.save_command)
         self.tkEntry.bind( "<Up>", self.display_previous_command )
         self.tkEntry.bind( "<Down>", self.display_next_command )
-
-
-        #print( self.tkEntry.grid_info() )
 
     def save_command( self, event ):
         """record entered command in history, reset history index"""
@@ -89,6 +89,7 @@ class CommandBar:
         self.tkEntry.delete( 0, tk.END )
         self.tkEntry.insert( 0, self.command_history[ self.command_history_index ] )
 
+#class List( tk.Listbox ):
 class List:
     """
     A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
@@ -130,8 +131,8 @@ class BentExplorerApp( tk.Tk ):
 
         widget_file_explorer = Explorer( frame_main )
     def Quit( self ):
-        if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
-            self.quit()
+        #if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
+        self.quit()
 
 app = BentExplorerApp()
 app.mainloop()
