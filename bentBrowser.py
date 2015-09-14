@@ -17,14 +17,12 @@ class Explorer:
     Uses two widgets to convey this: Explorer and List.
     """
     def __init__(self, parent):
-        self.frame_list = tk.Frame( parent )
-        self.widget_list = List( self.frame_list )
+        self.widget_list = List( parent )
 
-        self.frame_commandBar = tk.Frame( parent )
-        self.widget_commandBar = CommandBar( self.frame_commandBar )
+        self.widget_commandBar = CommandBar( parent )
 
-        self.frame_list.grid( row=55 )
-        self.frame_commandBar.grid( row=99 )
+        self.widget_list.grid( row=55 )
+        self.widget_commandBar.grid( row=99 )
 
     # TODO set size limit for command_history
     # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
@@ -58,9 +56,11 @@ class CommandBar:
         self.tkEntry.bind( "<Up>", self.display_previous_command )
         self.tkEntry.bind( "<Down>", self.display_next_command )
 
-        self.tkEntry.grid()
 
         #print( self.tkEntry.grid_info() )
+
+    def grid( self, *args, **kwargs ):
+        self.tkEntry.grid( row=kwargs[ "row" ] )
 
     def save_command( self, event ):
         """record entered command in history, reset history index"""
@@ -94,6 +94,9 @@ class List:
         self.tkListbox = tk.Listbox( parent,
                 selectmode=tk.EXTENDED )
         self.tkListbox.grid()
+
+    def grid( self, *args, **kwargs ):
+        self.tkListbox.grid( row=kwargs[ "row" ] )
 
     def display_list( self, list ):
         self.tkListbox.delete( 0, tk.END )
