@@ -125,4 +125,3 @@ class BentExplorerApp( tk.Tk ):
 app = BentExplorerApp()
 app.mainloop()
 #app.destroy()
-
