@@ -23,6 +23,9 @@ class Explorer:
         self.widget_list.grid( row=55 )
         self.widget_commandBar.grid( row=99 )
 
+    def update( self, command ):
+        self.widget_list.update( command )
+
     # TODO set size limit for command_history
     # TODO hiting up should show you the previous one, hiting down should show you the command you were just composing
     #       example, i enter the command 'renam' but don't hit enter, i hit <Up> <Down> and still see 'renam'
@@ -43,6 +46,7 @@ class CommandBar:
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
     def __init__( self, parent_frame, parent_object ):
+        self.parent_object = parent_object
         self.command_history = [""]
         self.command_history_index = 0
         self.command_history_length = 0
@@ -66,6 +70,7 @@ class CommandBar:
             # replace len(commandhis) with saved value for performance nicrease
             self.command_history[ -1 : len( self.command_history ) ] = [ text_command, "" ]
             self.command_history_index = len( self.command_history ) - 1
+            self.parent_object.update( text_command )
 
     def grid( self, **kwargs ):
         self.tkEntry.grid( **kwargs )
@@ -93,6 +98,10 @@ class List:
         self.tkListbox = tk.Listbox( parent_frame,
                 selectmode=tk.EXTENDED )
         self.tkListbox.grid()
+
+    def update( self, command ):
+        self.contents.append( command )
+        self.tkListbox.insert( tk.END, command )
 
     def grid( self, **kwargs ):
         self.tkListbox.grid( **kwargs )
