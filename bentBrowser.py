@@ -20,7 +20,7 @@ class Explorer:
     Uses two widgets to convey this: Explorer and List.
     """
     def __init__(self, parent_frame ):
-        self.widget_list = List( master=parent_frame )
+        self.widget_list = List( parent_frame, self )
         self.widget_commandBar = CommandBar( parent_frame, self )
 
         self.widget_list.grid( row=55 )
@@ -49,7 +49,7 @@ class CommandBar( tk.Entry ):
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
     def __init__( self, parent_frame, parent_object ):
-        tk.Entry.__init__(self)
+        tk.Entry.__init__( self, parent_frame )
         self.parent_object = parent_object
         self.command_history = [""]
         self.command_history_index = 0
@@ -91,13 +91,12 @@ class List( tk.Listbox):
     """
     A List object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
     """
-    def __init__( self, master=None, cnf={}, **kw ):
-        tk.Widget.__init__(self, master, 'listbox', cnf, kw)
+    def __init__( self, parent_frame, parent_object ):
+        tk.Listbox.__init__( self, parent_frame )
 
         self.contents = []
         #self.tkListbox = tk.Listbox( master,
                 #selectmode=tk.EXTENDED )
-        self.grid()
 
     def update( self, command ):
         self.contents.append( command )
@@ -130,6 +129,7 @@ class BentExplorerApp( tk.Tk ):
         #if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
         self.quit()
 
-app = BentExplorerApp()
-app.mainloop()
-#app.destroy()
+if __name__ == "__main__":
+    app = BentExplorerApp()
+    app.mainloop()
+    #app.destroy()
