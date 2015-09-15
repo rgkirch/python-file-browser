@@ -134,9 +134,13 @@ class Listing( tk.Listbox):
 		self.delete( 0, tk.END )
 		for item in contents:
 			self.insert( 0, item )
+
 	def append_contents( self, contents ):
 		for item in contents:
 			self.insert( tk.END, item )
+
+class Browser():
+	pass
 
 class BentExplorerApp( tk.Tk ):
 	def __init__( self, *args, **kwargs ):
