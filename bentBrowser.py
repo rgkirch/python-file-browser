@@ -1,18 +1,14 @@
 # I dream of making my own os one day. I will call it Bent os.
 
-#from Tkinter import *
+# TODO check python version and use relevant tkinter virsion
 try:
 	import Tkinter as tk
 except ImportError:
 	import tkinter as tk
 #import tkMessageBox
+# consider using trustedPickle instead
 import pickle
 import os
-
-# not used
-class Vimregex( object ):
-	"""implement something like 'vimregex.com'"""
-	vimregex_keywords = ["substitute"]
 
 # main widget
 class Explorer:
@@ -35,10 +31,6 @@ class Explorer:
 
 	def __setstate__( self, item ):
 		print( item )
-
-	def pickle( self ):
-		with open( "explorer.pickle", "wb" ) as f:
-			pickle.dump( self, f )
 
 class CommandBar( tk.Entry ):
 	"""
@@ -83,9 +75,6 @@ class CommandBar( tk.Entry ):
 	def __setstate__( self, item ):
 		print( item )
 
-	def pickle( self ):
-		with open( "commandBar.pickle", "wb" ) as f:
-			pickle.dump( self, f )
 
 	def save_command( self, event ):
 		"""record entered command in history, reset history index"""
@@ -121,10 +110,10 @@ class Listing( tk.Listbox):
 		tk.Listbox.__init__( self, parent_frame, selectmode=tk.EXTENDED )
 
 	def __getstate__( self ):
-		return pickle.dumps( "" )
+		return None
 
-	def __setstate__( self, item ):
-		print( item )
+	def __setstate__( self ):
+		return None
 
 	def pickle( self ):
 		with open( "listing.pickle", "wb" ) as f:
@@ -153,6 +142,16 @@ class BentExplorerApp( tk.Tk ):
 				text="QUIT",
 				command=self.Quit )
 		btn_quit.grid( row=99 )
+
+	def __getstate__(self):
+		return None
+
+	def __setstate__(self):
+		return None
+
+	def save_app_state( self ):
+		with open( "commandBar.pickle", "wb" ) as f:
+			pickle.dump( self, f )
 
 	def Quit( self ):
 		#if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
