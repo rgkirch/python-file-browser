@@ -1,5 +1,9 @@
 # I dream of making my own os one day. I will call it Bent os.
 
+# general TODO
+# figure out how to allow width of widget to expand as window expands, set weight to 1 not 0
+# everything with pickle is in progress
+
 # TODO check python version and use relevant tkinter virsion
 try:
 	import Tkinter as tk
@@ -10,11 +14,14 @@ except ImportError:
 import pickle
 import os
 
+DEBUG = 1
+
 # main widget
 class Explorer:
 	"""
 	Allows the user to navigate the file tree.
 	Uses two widgets to convey this: Explorer and Listing.
+	Explorer controls the file navigation.
 	"""
 	def __init__(self, parent_frame ):
 		self.widget_list = Listing( parent_frame, self )
@@ -23,7 +30,10 @@ class Explorer:
 		self.widget_list.grid( row=55 )
 		self.widget_commandBar.grid( row=99 )
 
-		self.contents = ["aaa", "bbb", "ccc"]
+		self.default_directory = os.path.expanduser("~/")
+		self.current_working_directory = self.default_directory
+		self.contents = os.listdir( self.current_working_directory )
+		self.contents = filter( lambda y: not y.startswith("."), self.contents )
 		self.widget_list.replace_contents( self.contents )
 
 	def __getstate__( self ):
@@ -31,14 +41,25 @@ class Explorer:
 
 	def __setstate__( self, item ):
 		print( item )
-
+	
+	def navigate_to_subdirectory( self, subdirectory ):
+		"""Expects the name of a directory in the scope of the current directory."""
+		if subdirectory in os.listdir( self.current_working_directory ):
+			self.current_working_directory = os.path.join( self.current_working_directory, subdirectory )
+			if DEBUG:
+				print( "cd", subdirectory )
+	def navigate_to_absolute_directory( self, absolute_path ):
+		"""Expects absolute path."""
+		# may be redundant with navigate_to_subdirectory
+		pass
+	
 class CommandBar( tk.Entry ):
 	"""
 	The commandbar will allow the user to enter longer command strnigs.
 	If the user wants to enter a vim style substitution command, the user may do so here.
 	The user may also use the <Up><Down> keys to view previous commands
 	"""
-	# TODO set size limit for command_history
+	# TODO set size limit for command_history - maybe
 	# because there is a separate object for CommandBar each instance will have its own command history
 
 	# if enter ren and hit up, complete to rename(if entered previously)
@@ -71,7 +92,9 @@ class CommandBar( tk.Entry ):
 		self.bind( "<Right>", lambda y: None )
 	
 	def __getstate__( self ):
+		# TODO maybe, have it save the 100 most popular commands in command history for autocomplete when reopen
 		return pickle.dumps( (self.command_history, self.command_history_index, self.command_history_length) )
+
 	def __setstate__( self, item ):
 		print( item )
 
@@ -105,6 +128,8 @@ class Listing( tk.Listbox):
 	"""
 	A Listing object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
 	"""
+	# The Listing can return a filename or dirname to the parent Explorer so that the Explorer can navigate to a new directory.
+	# The Listing does not change folder itself. Just display whats given to it and it has options for changing the aesthetics.
 	def __init__( self, parent_frame, parent_object ):
 		"""Listing inheretis from listbox, call listbox init function to avoid error of not finding attribute tk."""
 		tk.Listbox.__init__( self, parent_frame, selectmode=tk.EXTENDED )
@@ -150,11 +175,12 @@ class BentExplorerApp( tk.Tk ):
 		return None
 
 	def save_app_state( self ):
-		with open( "commandBar.pickle", "wb" ) as f:
+		with open( "BentExplorerApp.pickle", "wb" ) as f:
 			pickle.dump( self, f )
 
 	def Quit( self ):
 		#if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
+		save_app_state()
 		self.quit()
 
 if __name__ == "__main__":
