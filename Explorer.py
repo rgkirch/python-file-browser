@@ -1,6 +1,11 @@
+# TODO - directoies should be a differnt color - pass indicies to a funciton in listing that says to color certain ones
+
 from Listing import Listing
 from CommandBar import CommandBar
 import os
+
+# TODO maybe have the top level set config options for each including the debug flag
+DEBUG = True
 
 try:
     import Tkinter as tk
@@ -16,29 +21,24 @@ class Explorer( tk.Frame ):
     """
     def __init__(self, parent ):
         tk.Frame.__init__( self, parent )
+        self.parent = parent
+
+        self.hide_dot_files_folders = True
+
         self.widget_list = Listing( self )
         self.widget_commandBar = CommandBar( self )
 
         self.widget_list.grid( row=0, sticky='nesw' )
         self.widget_commandBar.grid( row=1, sticky='nesw' )
-        self.grid()
-
-        self.rowconfigure( 'all', weight=0 )
-        self.columnconfigure( 'all', weight=0 )
-
-        self.widget_list.rowconfigure('all', weight=0)
-        self.widget_list.columnconfigure('all', weight=0)
-        self.widget_commandBar.rowconfigure('all', weight=0)
-        self.widget_commandBar.columnconfigure('all', weight=0)
 
         self.default_directory = os.path.expanduser("~/")
         self.current_working_directory = self.default_directory
-        self.contents = os.listdir( self.current_working_directory )
-        self.contents = filter( lambda y: not y.startswith("."), self.contents )
-        self.widget_list.replace_contents( self.contents )
+        self.navigate_to_absolute_path( self.current_working_directory )
 
     def __getstate__( self ):
-        return pickle.dumps( self.contents ) + pickle.dumps( self.widget_list ) + pickle.dumps( self.widget_commandBar )
+        # have a way to save the default directory
+        #return pickle.dumps( self.contents ) + pickle.dumps( self.widget_list ) + pickle.dumps( self.widget_commandBar )
+        return None
 
     def __setstate__( self, item ):
         return None
@@ -55,13 +55,34 @@ class Explorer( tk.Frame ):
         newpath = os.path.join( self.current_working_directory, subdirectory )
         if newpath.isdir() and subdirectory in os.listdir( self.current_working_directory ):
             self.current_working_directory = newpath
-            if DEBUG:
-                print( "cd", subdirectory )
 
-    def navigate_to_absolute_directory( self, absolute_path ):
+    def navigate_to_absolute_path( self, absolute_path ):
         """Expects absolute path."""
-        # may be redundant with navigate_to_subdirectory
-        #self.
+        if os.path.isdir( absolute_path ):
+            os.chdir( absolute_path )
+            self.current_working_directory = absolute_path
+            self.contents = os.listdir( self.current_working_directory )
+            if self.hide_dot_files_folders:
+                self.contents = filter( lambda y: not y.startswith("."), self.contents )
+            self.widget_list.replace_contents( self.contents )
 
-    def listing_item_selected( self, item ):
-        self.navigate_to_subdirectory( item )
+    def primary( self, items ):
+        if len( items ) == 1:
+            newpath = os.path.join( self.current_working_directory, items[0] )
+            if os.path.isdir( newpath ):
+                self.folder_primary( newpath )
+            else:
+                self.file_primary( newpath )
+        print( items )
+
+    def folder_primary( self, path ):
+        self.parent.status_last_command( "cd " + str(path) )
+        print( "cd", path)
+        self.navigate_to_absolute_path( path )
+
+    def file_primary( self, path ):
+        print( path )
+
+    def secondary( self, items ):
+        print( items )
+

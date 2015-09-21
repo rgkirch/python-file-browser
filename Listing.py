@@ -13,7 +13,8 @@ class Listing( tk.Listbox):
         """Listing inheretis from listbox, call listbox init function to avoid error of not finding attribute tk."""
         tk.Listbox.__init__( self, parent, selectmode=tk.EXTENDED )
         self.parent = parent
-        self.bind( "<Return>", self.item_selected )
+        self.bind( "<Double-Button-1>", self.primary )
+        self.bind( "<Return>", self.primary )
         self.rowconfigure('all', weight=1)
         self.columnconfigure('all', weight=1)
 
@@ -23,8 +24,15 @@ class Listing( tk.Listbox):
     def __setstate__( self ):
         return None
 
-    def item_selected( self, event ):
-        self.parent.listing_item_selected( self.curselection )
+    def primary( self, event ):
+        #self.parent.listing_items_selected( self.curselection )
+        selection = self.curselection()
+        contents = self.get( 0, tk.END )
+        self.parent.primary( [ contents[x] for x in selection ] )
+        return None
+
+    def secondary( self, event ):
+        pass
 
     def pickle( self ):
         with open( "listing.pickle", "wb" ) as f:

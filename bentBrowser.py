@@ -29,6 +29,7 @@ class BentExplorerApp( tk.Tk ):
         self.protocol( "WM_DELETE_WINDOW", self.destroy )
 
         self.wm_title("bent file explorer")
+        self.text_last_command = tk.StringVar()
         #print( self.winfo_screenwidth() )
 
         widget_file_explorer = Explorer( self )
@@ -38,11 +39,15 @@ class BentExplorerApp( tk.Tk ):
             text="QUIT",
             command=self.Quit )
 
+        lbl_last_command = tk.Label( frame_bottom,
+                textvariable = self.text_last_command )
+
         widget_file_explorer.grid( row=0, sticky='nesw' )
         #post grid row column configure - must be called after grid but should be specified by the widget itself, not here
         widget_file_explorer.pgrc_configure()
         frame_bottom.grid( row=1, sticky='nesw' )
-        btn_quit.grid( sticky='e' )
+        btn_quit.grid( column=2, sticky='e' )
+        lbl_last_command.grid( column=0, sticky='w' )
 
         self.rowconfigure('0', weight=1)
         self.columnconfigure('all', weight=1)
@@ -63,6 +68,9 @@ class BentExplorerApp( tk.Tk ):
         #if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
         self.save_app_state()
         self.quit()
+
+    def status_last_command( self, text ):
+        self.text_last_command.set( text )
 
 if __name__ == "__main__":
     app = BentExplorerApp()
