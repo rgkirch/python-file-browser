@@ -1,8 +1,7 @@
 # I dream of making my own os one day. I will call it Bent os.
 
 # general TODO
-# figure out how to allow width of widget to expand as window expands, set weight to 1 not 0
-# everything with pickle is in progress
+# nothing with pickle is implemented
 
 # TODO check python version and use relevant tkinter virsion
 try:

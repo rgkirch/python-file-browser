@@ -24,6 +24,7 @@ class Explorer( tk.Frame ):
         self.parent = parent
 
         self.hide_dot_files_folders = True
+        self.separate_dirs_n_files = True
 
         self.widget_list = Listing( self )
         self.widget_commandBar = CommandBar( self )
@@ -43,28 +44,24 @@ class Explorer( tk.Frame ):
     def __setstate__( self, item ):
         return None
 
+    # post grid row column
     def pgrc_configure(self):
         self.rowconfigure(0, weight=1)
         self.columnconfigure('all', weight=1)
 
-    def navigate_to_subdirectory( self, index ):
-        """Expects the name of a directory in the scope of the current directory."""
-        # TODO check that directory exists, os.path.exists may return false if we're lacking permisions even if it does exist
-        # checks the current dir for subdir, change current dir to join(current dir, subdir)
-        subdirectory = os.listdir( self.current_working_directory )[index]
-        newpath = os.path.join( self.current_working_directory, subdirectory )
-        if newpath.isdir() and subdirectory in os.listdir( self.current_working_directory ):
-            self.current_working_directory = newpath
-
     def navigate_to_absolute_path( self, absolute_path ):
-        """Expects absolute path."""
+        """Expects absolute path.
+        Fills in the listing widget with the contents of the directory and colors some of the entries light gray."""
         if os.path.isdir( absolute_path ):
             os.chdir( absolute_path )
             self.current_working_directory = absolute_path
             self.contents = os.listdir( self.current_working_directory )
             if self.hide_dot_files_folders:
-                self.contents = filter( lambda y: not y.startswith("."), self.contents )
+                self.contents = list( filter( lambda y: not y.startswith("."), self.contents ) )
             self.widget_list.replace_contents( self.contents )
+            for index, entry in enumerate( self.contents ):
+                if os.path.isdir( os.path.join( self.current_working_directory, entry ) ):
+                    self.widget_list.itemconfig( index, bg='light gray' )
 
     def primary( self, items ):
         if len( items ) == 1:
@@ -73,11 +70,10 @@ class Explorer( tk.Frame ):
                 self.folder_primary( newpath )
             else:
                 self.file_primary( newpath )
-        print( items )
 
     def folder_primary( self, path ):
         self.parent.status_last_command( "cd " + str(path) )
-        print( "cd", path)
+        #print( "cd", path)
         self.navigate_to_absolute_path( path )
 
     def file_primary( self, path ):
