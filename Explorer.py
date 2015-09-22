@@ -81,11 +81,12 @@ class Explorer( tk.Frame ):
 
     def file_primary( self, path ):
         if sys.platform == "linux" or sys.platform == "linux2":
-            os.system( "xdg-open " + path )
+            #os.system( "xdg-open " + path )
+            os.popen( "xdg-open " + path )
         elif sys.platform == "win32":
-            os.system( "" )
+            os.popen( "start " + path )
         elif sys.platform == "darwin":
-            os.system( "" )
+            os.popen( "" + path )
         return None
 
     def secondary( self, items ):
