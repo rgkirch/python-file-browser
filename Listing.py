@@ -12,6 +12,8 @@ class Listing( tk.Listbox):
     def __init__( self, parent ):
         """Listing inheretis from listbox, call listbox init function to avoid error of not finding attribute tk."""
         tk.Listbox.__init__( self, parent, selectmode=tk.EXTENDED )
+        self.config( font="monospace 14" )
+
         self.parent = parent
         self.bind( "<Double-Button-1>", self.primary )
         self.bind( "<Return>", self.primary )
@@ -43,6 +45,7 @@ class Listing( tk.Listbox):
         self.delete( 0, tk.END )
         for item in contents:
             self.insert( 0, item )
+        #print( self.config() )
 
     def append_contents( self, contents ):
         for item in contents:
