@@ -41,10 +41,15 @@ class Listing( tk.Listbox):
         with open( "listing.pickle", "wb" ) as f:
             pickle.dump( self, f )
 
-    def replace_contents( self, contents ):
+    def replace_contents( self, contents, key=None, reverse=False ):
+        """Accepts a key to use in the sorted function."""
         self.delete( 0, tk.END )
-        for item in contents:
-            self.insert( 0, item )
+        if key != None:
+            for item in sorted( contents, key, reverse ):
+                self.insert( tk.END, item )
+        else:
+            for item in contents:
+                self.insert( tk.END, item )
         #print( self.config() )
 
     def append_contents( self, contents ):
