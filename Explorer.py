@@ -3,6 +3,7 @@
 from Listing import Listing
 from CommandBar import CommandBar
 import os
+import sys
 
 # TODO maybe have the top level set config options for each including the debug flag
 DEBUG = True
@@ -70,14 +71,22 @@ class Explorer( tk.Frame ):
                 self.folder_primary( newpath )
             else:
                 self.file_primary( newpath )
+        return None
 
-    def folder_primary( self, path ):
-        self.parent.status_last_command( "cd " + str(path) )
+    def folder_primary( self, abs_path ):
+        self.parent.status_last_command( "cd " + str(abs_path) )
         #print( "cd", path)
-        self.navigate_to_absolute_path( path )
+        self.navigate_to_absolute_path( abs_path )
+        return None
 
     def file_primary( self, path ):
-        print( path )
+        if sys.platform == "linux" or sys.platform == "linux2":
+            os.system( "xdg-open " + path )
+        elif sys.platform == "win32":
+            os.system( "" )
+        elif sys.platform == "darwin":
+            os.system( "" )
+        return None
 
     def secondary( self, items ):
         print( items )
