@@ -60,7 +60,7 @@ class Explorer( tk.Frame ):
             if self.hide_dot_files_folders:
                 self.contents = list( filter( lambda y: not y.startswith("."), self.contents ) )
             self.widget_list.replace_contents( self.contents )
-            for index, entry in enumerate( self.contents ):
+            for index, entry in enumerate( self.widget_list.get( 0, tk.END ) ):
                 if os.path.isdir( os.path.join( self.current_working_directory, entry ) ):
                     self.widget_list.itemconfig( index, bg='light gray' )
 
@@ -92,7 +92,7 @@ class Explorer( tk.Frame ):
         print( items )
 
     def alt_up( self, event ):
-        head, tail = os.path.split( self.current_working_directory )
+        head = os.path.dirname( self.current_working_directory )
         self.navigate_to_absolute_path( head )
         return None
 
