@@ -15,6 +15,7 @@ class Listing( tk.Listbox):
         self.parent = parent
         self.bind( "<Double-Button-1>", self.primary )
         self.bind( "<Return>", self.primary )
+        self.bind( "<Alt-Up>", self.parent.alt_up )
         self.rowconfigure('all', weight=1)
         self.columnconfigure('all', weight=1)
 

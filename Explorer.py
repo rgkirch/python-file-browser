@@ -91,3 +91,8 @@ class Explorer( tk.Frame ):
     def secondary( self, items ):
         print( items )
 
+    def alt_up( self, event ):
+        head, tail = os.path.split( self.current_working_directory )
+        self.navigate_to_absolute_path( head )
+        return None
+
