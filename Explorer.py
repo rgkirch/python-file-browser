@@ -21,7 +21,8 @@ class Explorer( tk.Frame ):
     Explorer controls the file navigation.
     """
     def __init__(self, parent ):
-        tk.Frame.__init__( self, parent )
+        #tk.Frame.__init__( self, parent )
+        super().__init__( parent )
         self.parent = parent
 
         self.hide_dot_files_folders = True
@@ -36,6 +37,7 @@ class Explorer( tk.Frame ):
         self.default_directory = os.path.expanduser("~/")
         self.current_working_directory = self.default_directory
         self.navigate_to_absolute_path( self.current_working_directory )
+
 
     def __getstate__( self ):
         # have a way to save the default directory
@@ -62,7 +64,7 @@ class Explorer( tk.Frame ):
             self.widget_list.replace_contents( self.contents )
             for index, entry in enumerate( self.widget_list.get( 0, tk.END ) ):
                 if os.path.isdir( os.path.join( self.current_working_directory, entry ) ):
-                    self.widget_list.itemconfig( index, bg='light gray' )
+                    self.widget_list.itemconfig( index, fg='dark blue' )
 
     def primary( self, items ):
         if len( items ) == 1:

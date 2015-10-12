@@ -11,12 +11,9 @@ except ImportError:
 #import tkMessageBox
 # consider using trustedPickle instead
 import pickle
-import os
 
 # TODO a better way to do this, maybe make a package and then say from package import *
 from Explorer import Explorer
-from Listing import Listing
-from CommandBar import CommandBar
 
 DEBUG = 1
 

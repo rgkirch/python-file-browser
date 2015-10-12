@@ -11,7 +11,8 @@ class Listing( tk.Listbox):
     # The Listing does not change folder itself. Just display whats given to it and it has options for changing the aesthetics.
     def __init__( self, parent ):
         """Listing inheretis from listbox, call listbox init function to avoid error of not finding attribute tk."""
-        tk.Listbox.__init__( self, parent, selectmode=tk.EXTENDED )
+        #tk.Listbox.__init__( self, parent, selectmode=tk.EXTENDED )
+        super().__init__( parent, selectmode=tk.EXTENDED )
         self.config( font="monospace 14" )
 
         self.parent = parent
@@ -41,16 +42,10 @@ class Listing( tk.Listbox):
         with open( "listing.pickle", "wb" ) as f:
             pickle.dump( self, f )
 
-    def replace_contents( self, contents, key=None, reverse=False ):
-        """Accepts a key to use in the sorted function."""
+    def replace_contents( self, contents ):
         self.delete( 0, tk.END )
-        if key != None:
-            for item in sorted( contents, key, reverse ):
-                self.insert( tk.END, item )
-        else:
-            for item in contents:
-                self.insert( tk.END, item )
-        #print( self.config() )
+        for item in contents:
+            self.insert( 0, item )
 
     def append_contents( self, contents ):
         for item in contents:

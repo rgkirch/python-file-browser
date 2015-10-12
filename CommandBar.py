@@ -21,7 +21,8 @@ class CommandBar( tk.Entry ):
     # aa,ab,b
     # dict = {a:{a:{},b:{}},b:{}}
     def __init__( self, parent ):
-        tk.Entry.__init__( self, parent, insertofftime=0 )
+        #tk.Entry.__init__( self, parent, insertofftime=0 )
+        super().__init__( parent, insertofftime=0 )
         # TODO figure out how to set columnconfigure to 1
         #self.configure(  )
 
