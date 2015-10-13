@@ -1,7 +1,16 @@
 from PyQt4 import QtGui
+from PyQt4.QtCore import QThread
 import sys
 import os
 import listbox
+
+class YourThreadName(QThread):
+    def __init__(self):
+        QThread.__init__(self)
+    def __del__(self):
+        self.wait()
+    def run(self):
+        pass
 
 class App(QtGui.QMainWindow):
     def __init__(self):
