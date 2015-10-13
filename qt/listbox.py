@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'listbox.ui'
+#
+# Created: Mon Oct 12 15:50:48 2015
+#      by: PyQt4 UI code generator 4.11.3
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
+class Ui_rootWindow(object):
+    def setupUi(self, rootWindow):
+        rootWindow.setObjectName(_fromUtf8("rootWindow"))
+        rootWindow.resize(438, 594)
+        self.rootWidget = QtGui.QWidget(rootWindow)
+        self.rootWidget.setObjectName(_fromUtf8("rootWidget"))
+        self.gridLayout = QtGui.QGridLayout(self.rootWidget)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.itemlist = QtGui.QListWidget(self.rootWidget)
+        self.itemlist.setObjectName(_fromUtf8("itemlist"))
+        self.verticalLayout.addWidget(self.itemlist)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.list = QtGui.QPushButton(self.rootWidget)
+        self.list.setObjectName(_fromUtf8("list"))
+        self.horizontalLayout.addWidget(self.list)
+        self.quit = QtGui.QPushButton(self.rootWidget)
+        self.quit.setObjectName(_fromUtf8("quit"))
+        self.horizontalLayout.addWidget(self.quit)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+        rootWindow.setCentralWidget(self.rootWidget)
+
+        self.retranslateUi(rootWindow)
+        QtCore.QMetaObject.connectSlotsByName(rootWindow)
+
+    def retranslateUi(self, rootWindow):
+        rootWindow.setWindowTitle(_translate("rootWindow", "MainWindow", None))
+        self.list.setText(_translate("rootWindow", "list", None))
+        self.quit.setText(_translate("rootWindow", "quit", None))
+
