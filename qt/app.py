@@ -1,8 +1,7 @@
-from PyQt4 import QtGui # Import the PyQt4 module we'll need
-import sys # We need sys so that we can pass argv to QApplication
-
-import listbox # This file holds our MainWindow and all design related things
-              # it also keeps events etc that we defined in Qt Designer
+from PyQt4 import QtGui
+import sys
+import os
+import listbox
 
 class App(QtGui.QMainWindow):
     def __init__(self):
@@ -13,18 +12,23 @@ class App(QtGui.QMainWindow):
         >>> print( "self", type( self ) )
         ('self', <class '__main__.App'>)
         """
+        super().__init__()
         self.ui = listbox.Ui_rootWindow()
-        super(self.__class__, self).__init__()
-        self.ui.setupUi(self)  # This is defined in design.py file automatically
-                            # It sets up layout and widgets that are defined
-
+        self.ui.setupUi(self)
+        self.ui.btnBrowse.clicked.connect(self.browse_folder)
+        self.ui.btnQuit.clicked.connect(self.close)
+    def browse_folder(self):
+        self.ui.listWidget.clear()
+        directory = QtGui.QFileDialog.getExistingDirectory(self,"Pick a folder")
+        if directory:
+            for file_name in os.listdir(directory): 
+                self.ui.listWidget.addItem(file_name)
 
 def main():
-    app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
-    form = App()                 # We set the form to be our ExampleApp (design)
-    form.show()                         # Show the form
-    app.exec_()                         # and execute the app
+    app = QtGui.QApplication(sys.argv[1:])
+    form = App()
+    form.show()
+    app.exec_()
 
-
-if __name__ == '__main__':              # if we're running file directly and not importing it
-    main()                              # run the main function
+if __name__ == '__main__':
+    main()

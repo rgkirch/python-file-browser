@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'listbox.ui'
 #
-# Created: Mon Oct 12 15:50:48 2015
+# Created: Tue Oct 13 13:20:34 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,17 +33,17 @@ class Ui_rootWindow(object):
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.itemlist = QtGui.QListWidget(self.rootWidget)
-        self.itemlist.setObjectName(_fromUtf8("itemlist"))
-        self.verticalLayout.addWidget(self.itemlist)
+        self.listWidget = QtGui.QListWidget(self.rootWidget)
+        self.listWidget.setObjectName(_fromUtf8("listWidget"))
+        self.verticalLayout.addWidget(self.listWidget)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.list = QtGui.QPushButton(self.rootWidget)
-        self.list.setObjectName(_fromUtf8("list"))
-        self.horizontalLayout.addWidget(self.list)
-        self.quit = QtGui.QPushButton(self.rootWidget)
-        self.quit.setObjectName(_fromUtf8("quit"))
-        self.horizontalLayout.addWidget(self.quit)
+        self.btnBrowse = QtGui.QPushButton(self.rootWidget)
+        self.btnBrowse.setObjectName(_fromUtf8("btnBrowse"))
+        self.horizontalLayout.addWidget(self.btnBrowse)
+        self.btnQuit = QtGui.QPushButton(self.rootWidget)
+        self.btnQuit.setObjectName(_fromUtf8("btnQuit"))
+        self.horizontalLayout.addWidget(self.btnQuit)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         rootWindow.setCentralWidget(self.rootWidget)
@@ -53,6 +53,6 @@ class Ui_rootWindow(object):
 
     def retranslateUi(self, rootWindow):
         rootWindow.setWindowTitle(_translate("rootWindow", "MainWindow", None))
-        self.list.setText(_translate("rootWindow", "list", None))
-        self.quit.setText(_translate("rootWindow", "quit", None))
+        self.btnBrowse.setText(_translate("rootWindow", "list", None))
+        self.btnQuit.setText(_translate("rootWindow", "quit", None))
 

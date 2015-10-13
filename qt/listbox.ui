@@ -18,19 +18,19 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QListWidget" name="itemlist"/>
+       <widget class="QListWidget" name="listWidget"/>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="list">
+         <widget class="QPushButton" name="btnBrowse">
           <property name="text">
            <string>list</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="quit">
+         <widget class="QPushButton" name="btnQuit">
           <property name="text">
            <string>quit</string>
           </property>
