@@ -4,14 +4,18 @@ import sys # We need sys so that we can pass argv to QApplication
 import listbox # This file holds our MainWindow and all design related things
               # it also keeps events etc that we defined in Qt Designer
 
-class App(QtGui.QMainWindow, listbox.Ui_rootWindow):
+class App(QtGui.QMainWindow):
     def __init__(self):
-        # Explaining super is out of the scope of this article
-        # So please google it if you're not familar with it
-        # Simple reason why we use it here is that it allows us to
-        # access variables, methods etc in the design.py file
+        """
+        >>> self.ui = listbox.Ui_rootWindow()
+        >>> print( "ui", type( self.ui ) )
+        ('ui', <class 'listbox.Ui_rootWindow'>)
+        >>> print( "self", type( self ) )
+        ('self', <class '__main__.App'>)
+        """
+        self.ui = listbox.Ui_rootWindow()
         super(self.__class__, self).__init__()
-        self.setupUi(self)  # This is defined in design.py file automatically
+        self.ui.setupUi(self)  # This is defined in design.py file automatically
                             # It sets up layout and widgets that are defined
 
 
