@@ -12,7 +12,7 @@ class Thread(QThread):
     def run(self):
         pass
 
-class App(QtGui.QMainWindow):
+class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self):
         """
         >>> self.ui = listbox.Ui_rootWindow()
@@ -25,7 +25,9 @@ class App(QtGui.QMainWindow):
         self.ui = listbox.Ui_rootWindow()
         self.ui.setupUi(self)
         self.ui.btnBrowse.clicked.connect(self.browse_folder)
-        self.ui.btnQuit.clicked.connect(self.close)
+        self.ui.actionAppQuit.triggered.connect(self.close)
+        self.setWindowTitle("My Window")
+        self.show()
     def browse_folder(self):
         self.ui.listWidget.clear()
         directory = QtGui.QFileDialog.getExistingDirectory(self,"Pick a folder")
@@ -35,8 +37,7 @@ class App(QtGui.QMainWindow):
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
-    form = App()
-    form.show()
+    window = BentExplorerApp()
     app.exec_()
 
 if __name__ == '__main__':

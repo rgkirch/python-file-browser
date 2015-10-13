@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'listbox.ui'
 #
-# Created: Tue Oct 13 14:19:36 2015
+# Created: Tue Oct 13 14:43:20 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,12 +46,23 @@ class Ui_rootWindow(object):
         self.btnBrowse = QtGui.QPushButton(self.rootWidget)
         self.btnBrowse.setObjectName(_fromUtf8("btnBrowse"))
         self.horizontalLayout.addWidget(self.btnBrowse)
-        self.btnQuit = QtGui.QPushButton(self.rootWidget)
-        self.btnQuit.setObjectName(_fromUtf8("btnQuit"))
-        self.horizontalLayout.addWidget(self.btnQuit)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         rootWindow.setCentralWidget(self.rootWidget)
+        self.menuBar = QtGui.QMenuBar(rootWindow)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 438, 20))
+        self.menuBar.setObjectName(_fromUtf8("menuBar"))
+        self.menuFile = QtGui.QMenu(self.menuBar)
+        self.menuFile.setObjectName(_fromUtf8("menuFile"))
+        rootWindow.setMenuBar(self.menuBar)
+        self.actionOh_thas_what = QtGui.QAction(rootWindow)
+        self.actionOh_thas_what.setObjectName(_fromUtf8("actionOh_thas_what"))
+        self.actionOh_snap = QtGui.QAction(rootWindow)
+        self.actionOh_snap.setObjectName(_fromUtf8("actionOh_snap"))
+        self.actionAppQuit = QtGui.QAction(rootWindow)
+        self.actionAppQuit.setObjectName(_fromUtf8("actionAppQuit"))
+        self.menuFile.addAction(self.actionAppQuit)
+        self.menuBar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(rootWindow)
         QtCore.QMetaObject.connectSlotsByName(rootWindow)
@@ -60,5 +71,8 @@ class Ui_rootWindow(object):
         rootWindow.setWindowTitle(_translate("rootWindow", "MainWindow", None))
         self.listWidget.setToolTip(_translate("rootWindow", "<html><head/><body><p>tooltip</p></body></html>", None))
         self.btnBrowse.setText(_translate("rootWindow", "list", None))
-        self.btnQuit.setText(_translate("rootWindow", "quit", None))
+        self.menuFile.setTitle(_translate("rootWindow", "File", None))
+        self.actionOh_thas_what.setText(_translate("rootWindow", "oh, thas what", None))
+        self.actionOh_snap.setText(_translate("rootWindow", "oh, snap", None))
+        self.actionAppQuit.setText(_translate("rootWindow", "Quit", None))
 

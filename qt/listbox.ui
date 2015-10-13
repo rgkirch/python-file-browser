@@ -42,19 +42,44 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="btnQuit">
-          <property name="text">
-           <string>quit</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
      </layout>
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>438</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionAppQuit"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <action name="actionOh_thas_what">
+   <property name="text">
+    <string>oh, thas what</string>
+   </property>
+  </action>
+  <action name="actionOh_snap">
+   <property name="text">
+    <string>oh, snap</string>
+   </property>
+  </action>
+  <action name="actionAppQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
