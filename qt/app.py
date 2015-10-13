@@ -4,7 +4,7 @@ import sys
 import os
 import listbox
 
-class YourThreadName(QThread):
+class Thread(QThread):
     def __init__(self):
         QThread.__init__(self)
     def __del__(self):

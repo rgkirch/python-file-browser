@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'listbox.ui'
 #
-# Created: Tue Oct 13 13:34:00 2015
+# Created: Tue Oct 13 14:19:36 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_rootWindow(object):
     def setupUi(self, rootWindow):
         rootWindow.setObjectName(_fromUtf8("rootWindow"))
-        rootWindow.resize(438, 594)
+        rootWindow.resize(438, 589)
         self.rootWidget = QtGui.QWidget(rootWindow)
         self.rootWidget.setObjectName(_fromUtf8("rootWidget"))
         self.gridLayout = QtGui.QGridLayout(self.rootWidget)
@@ -34,6 +34,11 @@ class Ui_rootWindow(object):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.listWidget = QtGui.QListWidget(self.rootWidget)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Monospace"))
+        font.setPointSize(10)
+        self.listWidget.setFont(font)
+        self.listWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.listWidget.setObjectName(_fromUtf8("listWidget"))
         self.verticalLayout.addWidget(self.listWidget)
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -53,6 +58,7 @@ class Ui_rootWindow(object):
 
     def retranslateUi(self, rootWindow):
         rootWindow.setWindowTitle(_translate("rootWindow", "MainWindow", None))
+        self.listWidget.setToolTip(_translate("rootWindow", "<html><head/><body><p>tooltip</p></body></html>", None))
         self.btnBrowse.setText(_translate("rootWindow", "list", None))
         self.btnQuit.setText(_translate("rootWindow", "quit", None))
 
