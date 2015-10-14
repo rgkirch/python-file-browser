@@ -16,26 +16,22 @@ class myFuncs():
         for wdgt in lst:
             wdgt.setupUi(parent)
 
-class Widget( QtGui.QWidget, hellothere.Ui_Form ):
+class Hellothere( QtGui.QWidget, hellothere.Ui_Form ):
     def __init__(self, parent):
         super().__init__()
         super().setupUi(parent)
 
-class BentExplorerApp(QtGui.QMainWindow, myFuncs):
-    def __init__(self):
+class BentExplorerApp(QtGui.QMainWindow):
+    def __init__(self, parent=None):
         """
         >>> self.ui = listbox.Ui_rootWindow()
         >>> print( "self", type( self ) )
         ('self', <class '__main__.App'>)
         """
-        super().__init__()
-        #super().__init__(parent=None)
-        self.widgets = []
-
-
-        self.rootWidget = Widget( self )
-        self.setCentralWidget(self.rootWidget )
-        print( self.centralWidget() )
+        #super().__init__()
+        super().__init__(parent)
+        self.setCentralWidget(QtGui.QStackedWidget())
+        self.centralWidget().addWidget(Hellothere(self))
 
         #self.rootWindow = rootWindow.Ui_rootWindow()
         #self.widgets.append( self.rootWidget )
