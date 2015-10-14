@@ -1,8 +1,7 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
-import sys
-import os
-import listbox
+import sys, os, dis
+import hellothere
 
 class Thread(QThread):
     def __init__(self):
@@ -12,21 +11,45 @@ class Thread(QThread):
     def run(self):
         pass
 
-class BentExplorerApp(QtGui.QMainWindow):
+class myFuncs():
+    def setupUi(self, parent, lst):
+        for wdgt in lst:
+            wdgt.setupUi(parent)
+
+class Widget( QtGui.QWidget, hellothere.Ui_Form ):
+    def __init__(self, parent):
+        super().__init__()
+        super().setupUi(parent)
+
+class BentExplorerApp(QtGui.QMainWindow, myFuncs):
     def __init__(self):
         """
         >>> self.ui = listbox.Ui_rootWindow()
-        >>> print( "ui", type( self.ui ) )
-        ('ui', <class 'listbox.Ui_rootWindow'>)
         >>> print( "self", type( self ) )
         ('self', <class '__main__.App'>)
         """
         super().__init__()
-        self.ui = listbox.Ui_rootWindow()
-        self.ui.setupUi(self)
-        self.ui.btnBrowse.clicked.connect(self.browse_folder)
-        self.ui.actionAppQuit.triggered.connect(self.close)
-        self.setWindowTitle("My Window")
+        #super().__init__(parent=None)
+        self.widgets = []
+
+
+        self.rootWidget = Widget( self )
+        self.setCentralWidget(self.rootWidget )
+        print( self.centralWidget() )
+
+        #self.rootWindow = rootWindow.Ui_rootWindow()
+        #self.widgets.append( self.rootWidget )
+        #self.fileList = fileList.Ui_filelist()
+        #self.widgets.append( self.fileList )
+
+        #self.setupUi(self, self.widgets)
+
+        #self.rootWidget.gridLayout.addItem( self.fileList )
+
+        #self.ui.btnBrowse.clicked.connect(self.browse_folder)
+        #self.ui.actionAppQuit.triggered.connect(QtGui.qApp.quit)
+        #self.ui.actionAppQuit.setShortcut("q")
+        self.setWindowTitle("Bent File Explorer")
         self.show()
     def browse_folder(self):
         self.ui.listWidget.clear()
