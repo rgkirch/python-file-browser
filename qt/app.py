@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
 import sys, os, dis
-import hellothere
+import hellothere, checkbox
 
 class Thread(QThread):
     def __init__(self):
@@ -21,6 +21,11 @@ class Hellothere( QtGui.QWidget, hellothere.Ui_Form ):
         super().__init__()
         super().setupUi(parent)
 
+class Checkbox( QtGui.QWidget, checkbox.Ui_Form ):
+    def __init__(self, parent):
+        super().__init__()
+        super().setupUi(parent)
+
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
         """
@@ -28,10 +33,12 @@ class BentExplorerApp(QtGui.QMainWindow):
         >>> print( "self", type( self ) )
         ('self', <class '__main__.App'>)
         """
-        #super().__init__()
         super().__init__(parent)
         self.setCentralWidget(QtGui.QStackedWidget())
         self.centralWidget().addWidget(Hellothere(self))
+        self.centralWidget().addWidget(Checkbox(self))
+        #self.centralWidget().setCurrentWidget(self.centralWidget().widget(0))
+        self.centralWidget().widget(0).hide()
 
         #self.rootWindow = rootWindow.Ui_rootWindow()
         #self.widgets.append( self.rootWidget )
