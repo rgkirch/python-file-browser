@@ -11,11 +11,6 @@ class Thread(QThread):
     def run(self):
         pass
 
-class myFuncs():
-    def setupUi(self, parent, lst):
-        for wdgt in lst:
-            wdgt.setupUi(parent)
-
 class Hellothere( QtGui.QWidget, hellothere.Ui_Form ):
     def __init__(self, parent):
         super().__init__()
@@ -34,10 +29,14 @@ class BentExplorerApp(QtGui.QMainWindow):
         ('self', <class '__main__.App'>)
         """
         super().__init__(parent)
+        self.setLayout(QtGui.QStackedLayout())
+        hello = Hellothere(self)
+        check = Checkbox(self)
         self.setCentralWidget(QtGui.QStackedWidget())
-        self.centralWidget().addWidget(Hellothere(self))
-        self.centralWidget().addWidget(Checkbox(self))
+        self.centralWidget().addWidget(hello)
+        self.centralWidget().addWidget(check)
         #self.centralWidget().setCurrentWidget(self.centralWidget().widget(0))
+        check.setHidden(True)
         self.centralWidget().widget(0).hide()
 
         #self.rootWindow = rootWindow.Ui_rootWindow()
@@ -64,6 +63,7 @@ class BentExplorerApp(QtGui.QMainWindow):
 def main():
     app = QtGui.QApplication(sys.argv[1:])
     window = BentExplorerApp()
+    window.show()
     app.exec_()
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'listbox.ui'
+# Form implementation generated from reading ui file 'rootWindow.ui'
 #
-# Created: Tue Oct 13 16:22:25 2015
+# Created: Wed Oct 14 14:18:22 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -31,26 +31,9 @@ class Ui_rootWindow(object):
         self.rootWidget.setObjectName(_fromUtf8("rootWidget"))
         self.gridLayout = QtGui.QGridLayout(self.rootWidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.listWidget = QtGui.QListWidget(self.rootWidget)
-        font = QtGui.QFont()
-        font.setFamily(_fromUtf8("Monospace"))
-        font.setPointSize(10)
-        self.listWidget.setFont(font)
-        self.listWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        self.listWidget.setObjectName(_fromUtf8("listWidget"))
-        self.verticalLayout.addWidget(self.listWidget)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.btnBrowse = QtGui.QPushButton(self.rootWidget)
-        self.btnBrowse.setObjectName(_fromUtf8("btnBrowse"))
-        self.horizontalLayout.addWidget(self.btnBrowse)
-        self.btnQuit = QtGui.QPushButton(self.rootWidget)
-        self.btnQuit.setObjectName(_fromUtf8("btnQuit"))
-        self.horizontalLayout.addWidget(self.btnQuit)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+        self.gridLayout_3 = QtGui.QGridLayout()
+        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
+        self.gridLayout.addLayout(self.gridLayout_3, 0, 0, 1, 1)
         rootWindow.setCentralWidget(self.rootWidget)
         self.menuBar = QtGui.QMenuBar(rootWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 438, 20))
@@ -73,9 +56,6 @@ class Ui_rootWindow(object):
 
     def retranslateUi(self, rootWindow):
         rootWindow.setWindowTitle(_translate("rootWindow", "MainWindow", None))
-        self.listWidget.setToolTip(_translate("rootWindow", "<html><head/><body><p>tooltip</p></body></html>", None))
-        self.btnBrowse.setText(_translate("rootWindow", "list", None))
-        self.btnQuit.setText(_translate("rootWindow", "quit", None))
         self.menuFile.setTitle(_translate("rootWindow", "File", None))
         self.actionOh_thas_what.setText(_translate("rootWindow", "oh, thas what", None))
         self.actionOh_snap.setText(_translate("rootWindow", "oh, snap", None))
