@@ -19,14 +19,38 @@ class Listing( tk.Listbox):
         self.bind( "<Double-Button-1>", self.primary )
         self.bind( "<Return>", self.primary )
         self.bind( "<Alt-Up>", self.parent.alt_up )
+        self.bind( "<Escape>", self.key_escape )
+        self.bind( "<Key>", self.key_pressed )
         self.rowconfigure('all', weight=1)
         self.columnconfigure('all', weight=1)
+        self.keys = []
 
     def __getstate__( self ):
         return None
 
     def __setstate__( self ):
         return None
+
+    def key_escape(self, event):
+        try:
+            if self.keys[0] == "/":
+                self.keys = []
+                self.parent.refresh_list()
+                print("escaping search")
+        except IndexError:
+            print("escape")
+
+    def key_pressed(self, event):
+        char = repr(event.char).replace("'", "")
+        if len(char) > 1:
+            print("listing key_pressed: oh, no,", char, "length > 1")
+        if char:
+            self.keys.append(char)
+            if len(self.keys) > 1 and self.keys[0] == "/":
+                self.parent.filter_list("".join(self.keys[1:]))
+            else:
+                self.keys = [char]
+        print("".join(self.keys))
 
     def primary( self, event ):
         #self.parent.listing_items_selected( self.curselection )

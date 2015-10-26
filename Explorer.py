@@ -2,8 +2,7 @@
 
 from Listing import Listing
 from CommandBar import CommandBar
-import os
-import sys
+import os, sys, re
 
 # TODO maybe have the top level set config options for each including the debug flag
 DEBUG = True
@@ -70,25 +69,9 @@ class Explorer( tk.Frame ):
         if len( items ) == 1:
             newpath = os.path.join( self.current_working_directory, items[0] )
             if os.path.isdir( newpath ):
-                self.folder_primary( newpath )
+                self.__folder_primary( newpath )
             else:
-                self.file_primary( newpath )
-        return None
-
-    def folder_primary( self, abs_path ):
-        self.parent.status_last_command( "cd " + str(abs_path) )
-        #print( "cd", path)
-        self.navigate_to_absolute_path( abs_path )
-        return None
-
-    def file_primary( self, path ):
-        if sys.platform == "linux" or sys.platform == "linux2":
-            #os.system( "xdg-open " + path )
-            os.popen( "xdg-open " + path )
-        elif sys.platform == "win32":
-            os.popen( "start " + path )
-        elif sys.platform == "darwin":
-            os.popen( "" + path )
+                self.__file_primary( newpath )
         return None
 
     def secondary( self, items ):
@@ -99,3 +82,29 @@ class Explorer( tk.Frame ):
         self.navigate_to_absolute_path( head )
         return None
 
+    def refresh_list(self):
+        self.navigate_to_absolute_path( self.current_working_directory )
+
+    def filter_list(self, string):
+        pattern = re.compile(string)
+        contents = self.contents[:]
+        contents = filter(lambda y: re.match(pattern, y), contents)
+        self.widget_list.replace_contents(contents)
+        print("replace!")
+        return None
+    
+    def __folder_primary( self, abs_path ):
+        self.parent.status_last_command( "cd " + str(abs_path) )
+        #print( "cd", path)
+        self.navigate_to_absolute_path( abs_path )
+        return None
+
+    def __file_primary( self, path ):
+        if sys.platform == "linux" or sys.platform == "linux2":
+            #os.system( "xdg-open " + path )
+            os.popen( "xdg-open " + path.replace(" ","\ ") )
+        elif sys.platform == "win32":
+            os.popen( "start " + path.replace(" ","\ ") )
+        elif sys.platform == "darwin":
+            os.popen( "" + path.replace(" ","\ ") )
+        return None
