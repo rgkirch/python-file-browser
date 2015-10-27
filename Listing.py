@@ -25,6 +25,7 @@ class Listing( tk.Listbox):
         self.rowconfigure('all', weight=1)
         self.columnconfigure('all', weight=1)
         self.keys = []
+        self.key_commands = {'j':self.vim_down, 'k':self.vim_up, 'h':self.vim_left, 'l':self.vim_right}
 
     def __getstate__( self ):
         return None
@@ -47,17 +48,35 @@ class Listing( tk.Listbox):
         return None
 
     def key_pressed(self, event):
-        char = repr(event.char).replace("'", "")
+        char = repr(event.char).replace("'", "").replace(" ", "")
         if len(char) > 1:
             return None
         if char:
             self.keys.append(char)
             if len(self.keys) > 1 and self.keys[0] == "/":
                 self.__parent_filter_list_by_keys_re()
+            elif char in self.key_commands.keys():
+                self.key_commands[char]()
+                self.keys = []
             else:
                 self.keys = [char]
         print("listing key_pressed: ", "".join(self.keys))
         return None
+
+    def vim_up(self):
+        event = tk.Event()
+        event['keysym'] = 'Up'
+        event['keysym_num'] = 65362
+        event['keycode'] = 111
+        event['widget'] = self
+        event['send_event'] = False
+        event['char'] = ''
+    def vim_right(self):
+        pass
+    def vim_down(self):
+        self.activate(self.size()-1)
+    def vim_left(self):
+        pass
     
     def __parent_filter_list_by_keys_re(self):
         self.parent.filter_list("".join(self.keys[1:]))
