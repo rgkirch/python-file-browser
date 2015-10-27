@@ -63,7 +63,7 @@ class Listing( tk.Listbox):
         #self.parent.listing_items_selected( self.curselection )
         selection = self.curselection()
         contents = self.get( 0, tk.END )
-        self.parent.primary( [ contents[x] for x in selection ] )
+        self.parent.primary( [ contents[int(x)] for x in selection ] )
         return None
 
     def secondary( self, event ):
