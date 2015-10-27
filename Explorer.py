@@ -63,9 +63,11 @@ class Explorer( tk.Frame ):
             if self.hide_dot_files_folders:
                 self.contents = list( filter( lambda y: not y.startswith("."), self.contents ) )
             self.widget_list.replace_contents( self.contents )
-            for index, entry in enumerate( self.widget_list.get( 0, tk.END ) ):
-                if os.path.isdir( os.path.join( self.current_working_directory, entry ) ):
-                    self.widget_list.itemconfig( index, fg='dark blue' )
+            self.color_directories()
+    def color_directories(self):
+        for index, entry in enumerate( self.widget_list.get( 0, tk.END ) ):
+            if os.path.isdir( os.path.join( self.current_working_directory, entry ) ):
+                self.widget_list.itemconfig( index, fg='dark blue' )
 
     def primary( self, items ):
         if len( items ) == 1:
@@ -92,6 +94,7 @@ class Explorer( tk.Frame ):
         contents = self.contents[:]
         contents = filter(lambda y: re.match(pattern, y), contents)
         self.widget_list.replace_contents(contents)
+        self.color_directories()
         print("replace!")
         return None
     
