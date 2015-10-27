@@ -37,6 +37,8 @@ class Explorer( tk.Frame ):
         self.current_working_directory = self.default_directory
         self.navigate_to_absolute_path( self.current_working_directory )
 
+        self.widget_list.focus()
+
 
     def __getstate__( self ):
         # have a way to save the default directory
