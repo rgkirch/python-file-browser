@@ -20,6 +20,7 @@ class Listing( tk.Listbox):
         self.bind( "<Return>", self.primary )
         self.bind( "<Alt-Up>", self.parent.alt_up )
         self.bind( "<Escape>", self.key_escape )
+        self.bind( "<Backspace>", self.key_backspace )
         self.bind( "<Key>", self.key_pressed )
         self.rowconfigure('all', weight=1)
         self.columnconfigure('all', weight=1)
@@ -32,25 +33,31 @@ class Listing( tk.Listbox):
         return None
 
     def key_escape(self, event):
-        try:
-            if self.keys[0] == "/":
-                self.keys = []
-                self.parent.refresh_list()
-                print("escaping search")
-        except IndexError:
-            print("escape")
+        if len(keys) > 0 and self.keys[0] == "/":
+            self.keys = []
+            self.parent.refresh_list()
+            print("listing key_escape: escaping search")
+        return None
+
+    def key_backspace(self, event):
+        if len(keys) > 0 and self.keys[0] == "/":
+            self.keys = self.keys[:-1]
+            self.parent.refresh_list()
+            print("listing key_backspace: backspace search")
+        return None
 
     def key_pressed(self, event):
         char = repr(event.char).replace("'", "")
         if len(char) > 1:
-            print("listing key_pressed: oh, no,", char, "length > 1")
+            return None
         if char:
             self.keys.append(char)
             if len(self.keys) > 1 and self.keys[0] == "/":
                 self.parent.filter_list("".join(self.keys[1:]))
             else:
                 self.keys = [char]
-        print("".join(self.keys))
+        print("listing key_pressed: ", "".join(self.keys))
+        return None
 
     def primary( self, event ):
         #self.parent.listing_items_selected( self.curselection )
