@@ -1,7 +1,6 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
 import sys, os, dis
-import hellothere, checkbox
 
 class Thread(QThread):
     def __init__(self):
@@ -10,16 +9,8 @@ class Thread(QThread):
         self.wait()
     def run(self):
         pass
-
-class Hellothere( QtGui.QWidget, hellothere.Ui_Form ):
-    def __init__(self, parent):
-        super().__init__()
-        super().setupUi(parent)
-
-class Checkbox( QtGui.QWidget, checkbox.Ui_Form ):
-    def __init__(self, parent):
-        super().__init__()
-        super().setupUi(parent)
+class Explorer(QtGui.QListWidget):
+    pass
 
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -29,15 +20,13 @@ class BentExplorerApp(QtGui.QMainWindow):
         ('self', <class '__main__.App'>)
         """
         super().__init__(parent)
-        self.stacked_layout = QtGui.QStackedLayout()
-        #self.stacked_layout.addWidget(Hellothere(hello))
-        #self.stacked_layout.addWidget(Checkbox(check))
-        self.stacked_layout.addWidget(hellothere.Ui_Form())
-        self.stacked_layout.addWidget(checkbox.Ui_Form())
-        self.central_widget = QtGui.QWidget()
-        self.central_widget.setLayout(self.stacked_layout)
-        self.setCentralWidget(self.central_widget)
-        self.stacked_layout.setCurrentIndex(0)
+        self.widgets = []
+        self.widgets.append(Explorer())
+        self.setCentralWidget(QtGui.QStackedWidget())
+        for widget in self.widgets:
+            self.centralWidget().addWidget(widget)
+        self.centralWidget().setCurrentIndex(0)
+
         #centralWidget.setCurrentWidget(self.centralWidget().widget(0))
         #self.centralWidget().widget(0).hide()
 
