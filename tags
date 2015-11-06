@@ -5,21 +5,39 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 BentExplorerApp	bentBrowser.py	/^class BentExplorerApp( tk.Tk ):$/;"	c
-CommandBar	bentBrowser.py	/^class CommandBar( tk.Entry ):$/;"	c
-Explorer	bentBrowser.py	/^class Explorer:$/;"	c
-List	bentBrowser.py	/^class List( tk.Listbox):$/;"	c
+CommandBar	CommandBar.py	/^class CommandBar( tk.Entry ):$/;"	c
+DEBUG	Explorer.py	/^DEBUG = True$/;"	v
+DEBUG	bentBrowser.py	/^DEBUG = 1$/;"	v
+Explorer	Explorer.py	/^class Explorer( tk.Frame ):$/;"	c
+Listing	Listing.py	/^class Listing( tk.Listbox):$/;"	c
 Quit	bentBrowser.py	/^    def Quit( self ):$/;"	m	class:BentExplorerApp
-Vimregex	bentBrowser.py	/^class Vimregex( object ):$/;"	c
+__getstate__	CommandBar.py	/^    def __getstate__( self ):$/;"	m	class:CommandBar	file:
+__getstate__	Explorer.py	/^    def __getstate__( self ):$/;"	m	class:Explorer	file:
+__getstate__	Listing.py	/^    def __getstate__( self ):$/;"	m	class:Listing	file:
+__getstate__	bentBrowser.py	/^    def __getstate__( self ):$/;"	m	class:BentExplorerApp	file:
+__init__	CommandBar.py	/^    def __init__( self, parent ):$/;"	m	class:CommandBar
+__init__	Explorer.py	/^    def __init__(self, parent ):$/;"	m	class:Explorer
+__init__	Listing.py	/^    def __init__( self, parent ):$/;"	m	class:Listing
 __init__	bentBrowser.py	/^    def __init__( self, *args, **kwargs ):$/;"	m	class:BentExplorerApp
-__init__	bentBrowser.py	/^    def __init__( self, master=None, cnf={}, **kw ):$/;"	m	class:CommandBar
-__init__	bentBrowser.py	/^    def __init__( self, master=None, cnf={}, **kw ):$/;"	m	class:List
-__init__	bentBrowser.py	/^    def __init__(self, parent_frame ):$/;"	m	class:Explorer
-app	bentBrowser.py	/^app = BentExplorerApp()$/;"	v
-display_list	bentBrowser.py	/^    def display_list( self, list ):$/;"	m	class:List
-display_next_command	bentBrowser.py	/^    def display_next_command( self, event ):$/;"	m	class:CommandBar
-display_previous_command	bentBrowser.py	/^    def display_previous_command( self, event ):$/;"	m	class:CommandBar
-insert_command_from_history	bentBrowser.py	/^    def insert_command_from_history( self ):$/;"	m	class:CommandBar
-save_command	bentBrowser.py	/^    def save_command( self, event ):$/;"	m	class:CommandBar
-update	bentBrowser.py	/^    def update( self, command ):$/;"	m	class:Explorer
-update	bentBrowser.py	/^    def update( self, command ):$/;"	m	class:List
-vimregex_keywords	bentBrowser.py	/^    vimregex_keywords = ["substitute"]$/;"	v	class:Vimregex
+__setstate__	CommandBar.py	/^    def __setstate__( self, item ):$/;"	m	class:CommandBar	file:
+__setstate__	Explorer.py	/^    def __setstate__( self, item ):$/;"	m	class:Explorer	file:
+__setstate__	Listing.py	/^    def __setstate__( self ):$/;"	m	class:Listing	file:
+__setstate__	bentBrowser.py	/^    def __setstate__( self ):$/;"	m	class:BentExplorerApp	file:
+alt_up	Explorer.py	/^    def alt_up( self, event ):$/;"	m	class:Explorer
+app	bentBrowser.py	/^    app = BentExplorerApp()$/;"	v
+append_contents	Listing.py	/^    def append_contents( self, contents ):$/;"	m	class:Listing
+display_next_command	CommandBar.py	/^    def display_next_command( self, event ):$/;"	m	class:CommandBar
+display_previous_command	CommandBar.py	/^    def display_previous_command( self, event ):$/;"	m	class:CommandBar
+file_primary	Explorer.py	/^    def file_primary( self, path ):$/;"	m	class:Explorer
+folder_primary	Explorer.py	/^    def folder_primary( self, abs_path ):$/;"	m	class:Explorer
+navigate_to_absolute_path	Explorer.py	/^    def navigate_to_absolute_path( self, absolute_path ):$/;"	m	class:Explorer
+pgrc_configure	Explorer.py	/^    def pgrc_configure(self):$/;"	m	class:Explorer
+pickle	Listing.py	/^    def pickle( self ):$/;"	m	class:Listing
+primary	Explorer.py	/^    def primary( self, items ):$/;"	m	class:Explorer
+primary	Listing.py	/^    def primary( self, event ):$/;"	m	class:Listing
+replace_contents	Listing.py	/^    def replace_contents( self, contents, key=None, reverse=False ):$/;"	m	class:Listing
+save_app_state	bentBrowser.py	/^    def save_app_state( self ):$/;"	m	class:BentExplorerApp
+save_command	CommandBar.py	/^    def save_command( self, event ):$/;"	m	class:CommandBar
+secondary	Explorer.py	/^    def secondary( self, items ):$/;"	m	class:Explorer
+secondary	Listing.py	/^    def secondary( self, event ):$/;"	m	class:Listing
+status_last_command	bentBrowser.py	/^    def status_last_command( self, text ):$/;"	m	class:BentExplorerApp

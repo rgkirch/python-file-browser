@@ -15,13 +15,14 @@ easy extended:
 	preview pictures
 	download files (provided address, wget (easy) also maybe have some intellegence about resuming a download or chose location based on downloaded item i.e. last item downloaded from domain "canvas.com" went into "usf/classes" so lets open that folder)
 extended:
+	select files in current folder by regular expression
+	filter files/folders displayed by regular expression
 	find files by search (search file names in current dir)
-	rename files by vimregex (:%s/vi/VIM/gc)
+	scratch this if regex does same thing ---rename files by vimregex (:%s/vi/VIM/gc)---
 
 screens needed
-	main screed of the file browser
-		a large listbox on the right side, shows files and folders
-
+	most used screen, Explorer
+		a large listbox shows files and folders, command bar to take commands
 
 
 view files in current directory
@@ -31,5 +32,5 @@ view files in current directory
 if i hit [down] then the first item should become selected and more presses of [down] move the selection down (likewise for up)
 
 stretch goal:
-if i hold [ctrl] and press [down] then the previously selected item should remain selected and a new select box (outline) will move down
+if i hold [ctrl] and press [down] then the previously selected item should remain selected and a new select box (outline) will move down (its in windows)
 

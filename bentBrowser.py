@@ -1,168 +1,74 @@
 # I dream of making my own os one day. I will call it Bent os.
 
-#from Tkinter import *
+# general TODO
+# nothing with pickle is implemented
+
+# TODO check python version and use relevant tkinter virsion
 try:
-	import Tkinter as tk
+    import Tkinter as tk
 except ImportError:
-	import tkinter as tk
+    import tkinter as tk
 #import tkMessageBox
+# consider using trustedPickle instead
 import pickle
-import os
 
-# not used
-class Vimregex( object ):
-	"""implement something like 'vimregex.com'"""
-	vimregex_keywords = ["substitute"]
+# TODO a better way to do this, maybe make a package and then say from package import *
+from Explorer import Explorer
 
-# main widget
-class Explorer:
-	"""
-	Allows the user to navigate the file tree.
-	Uses two widgets to convey this: Explorer and Listing.
-	"""
-	def __init__(self, parent_frame ):
-		self.widget_list = Listing( parent_frame, self )
-		self.widget_commandBar = CommandBar( parent_frame, self )
-
-		self.widget_list.grid( row=55 )
-		self.widget_commandBar.grid( row=99 )
-
-		self.contents = ["aaa", "bbb", "ccc"]
-		self.widget_list.replace_contents( self.contents )
-
-	def __getstate__( self ):
-		return pickle.dumps( self.contents ) + pickle.dumps( self.widget_list ) + pickle.dumps( self.widget_commandBar )
-
-	def __setstate__( self, item ):
-		print( item )
-
-	def pickle( self ):
-		with open( "explorer.pickle", "wb" ) as f:
-			pickle.dump( self, f )
-
-class CommandBar( tk.Entry ):
-	"""
-	The commandbar will allow the user to enter longer command strnigs.
-	If the user wants to enter a vim style substitution command, the user may do so here.
-	The user may also use the <Up><Down> keys to view previous commands
-	"""
-	# TODO set size limit for command_history
-	# because there is a separate object for CommandBar each instance will have its own command history
-
-	# if enter ren and hit up, complete to rename(if entered previously)
-	# dict = {rename:[0,3],ls:[1,5,6],cd:[2,4]}
-	#	ls was the last one entered
-	#	<UP>(ls)<Up>(ls)<Up>(cd)
-	# commands entered: sub_brad, sub_bravo, stash
-	# dict = {s:{u:{b:{_:{b:{r:{a:{d:{},v:{o:{}}}}}}}},t:{a:{s:{h:{}}}}}}
-	# aa,ab,b
-	# dict = {a:{a:{},b:{}},b:{}}
-	def __init__( self, parent_frame, parent_object ):
-		tk.Entry.__init__( self, parent_frame, insertofftime=0 )
-		# TODO figure out how to set columnconfigure to 1
-		#self.configure(  )
-
-		self.parent_object = parent_object
-
-		self.command_history = [""]
-		self.command_history_index = 0
-		self.command_history_length = 0
-
-		# delete nothing then insert the empty string...
-		self.delete( 0, tk.END )
-		self.insert( 0, self.command_history[ self.command_history_index ] )
-
-		self.bind( "<Return>", self.save_command)
-		self.bind( "<Up>", self.display_previous_command )
-		self.bind( "<Down>", self.display_next_command )
-		self.bind( "<Left>", lambda y: None )
-		self.bind( "<Right>", lambda y: None )
-	
-	def __getstate__( self ):
-		return pickle.dumps( (self.command_history, self.command_history_index, self.command_history_length) )
-	def __setstate__( self, item ):
-		print( item )
-
-	def pickle( self ):
-		with open( "commandBar.pickle", "wb" ) as f:
-			pickle.dump( self, f )
-
-	def save_command( self, event ):
-		"""record entered command in history, reset history index"""
-		text_command = self.get()
-		if text_command:
-			self.delete( 0, tk.END )
-			# replace len(commandhis) with saved value for performance nicrease
-			self.command_history[ -1 : len( self.command_history ) ] = [ text_command, "" ]
-			self.command_history_index = len( self.command_history ) - 1
-
-	def display_previous_command( self, event ):
-		"""Show the previous(by index) command in the command bar. If there was any text in the command bar, it will become the last entry of the command history. Different than hiting <Return>"""
-		if self.command_history_index > 0:
-			if self.command_history_index == len( self.command_history ) - 1:
-				self.command_history[ -1 ] = self.get()
-			self.command_history_index -= 1
-			self.delete( 0, tk.END )
-			self.insert( 0, self.command_history[ self.command_history_index ] )
-
-	def display_next_command( self, event ):
-		"""Show the next(by index) command in the command bar."""
-		if self.command_history_index < len( self.command_history ) - 1:
-			self.command_history_index += 1
-			self.delete( 0, tk.END )
-			self.insert( 0, self.command_history[ self.command_history_index ] )
-
-class Listing( tk.Listbox):
-	"""
-	A Listing object will display stuff. The user may use keyboard shortcuts to control aspects of how the stuff in the list is displayed.
-	"""
-	def __init__( self, parent_frame, parent_object ):
-		"""Listing inheretis from listbox, call listbox init function to avoid error of not finding attribute tk."""
-		tk.Listbox.__init__( self, parent_frame, selectmode=tk.EXTENDED )
-
-	def __getstate__( self ):
-		return pickle.dumps( "" )
-
-	def __setstate__( self, item ):
-		print( item )
-
-	def pickle( self ):
-		with open( "listing.pickle", "wb" ) as f:
-			pickle.dump( self, f )
-
-	def replace_contents( self, contents ):
-		self.delete( 0, tk.END )
-		for item in contents:
-			self.insert( 0, item )
-
-	def append_contents( self, contents ):
-		for item in contents:
-			self.insert( tk.END, item )
-
-class Browser():
-	pass
+DEBUG = 1
 
 class BentExplorerApp( tk.Tk ):
-	def __init__( self, *args, **kwargs ):
-		tk.Tk.__init__( self, *args, **kwargs )
-		self.protocol( "WM_DELETE_WINDOW", self.destroy )
+    """
+    """
+    def __init__( self, *args, **kwargs ):
+        tk.Tk.__init__( self, *args, **kwargs )
+        self.protocol( "WM_DELETE_WINDOW", self.destroy )
 
-		self.wm_title("bent file explorer")
-		#print( self.winfo_screenwidth() )
-		frame_main = tk.Frame( self )
-		frame_main.grid( row=55 )
-		widget_file_explorer = Explorer( frame_main )
+        self.wm_title("bent file explorer")
+        self.text_last_command = tk.StringVar()
+        #print( self.winfo_screenwidth() )
 
-		btn_quit = tk.Button( self,
-				text="QUIT",
-				command=self.Quit )
-		btn_quit.grid( row=99 )
+        widget_file_explorer = Explorer( self )
+        frame_bottom = tk.Frame( self )
 
-	def Quit( self ):
-		#if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
-		self.quit()
+        btn_quit = tk.Button( frame_bottom,
+            text="QUIT",
+            command=self.Quit )
+
+        lbl_last_command = tk.Label( frame_bottom,
+                textvariable = self.text_last_command )
+
+        widget_file_explorer.grid( row=0, sticky='nesw' )
+        #post grid row column configure - must be called after grid but should be specified by the widget itself, not here
+        widget_file_explorer.pgrc_configure()
+        frame_bottom.grid( row=1, sticky='nesw' )
+        btn_quit.grid( column=2, sticky='e' )
+        lbl_last_command.grid( column=0, sticky='w' )
+
+        self.rowconfigure('0', weight=1)
+        self.columnconfigure('all', weight=1)
+        frame_bottom.columnconfigure('all', weight=1)
+
+
+    def __getstate__( self ):
+        return None
+
+    def __setstate__( self ):
+        return None
+
+    def save_app_state( self ):
+        with open( "BentExplorerApp.pickle", "wb" ) as f:
+            pickle.dump( self, f )
+
+    def Quit( self ):
+        #if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
+        self.save_app_state()
+        self.quit()
+
+    def status_last_command( self, text ):
+        self.text_last_command.set( text )
 
 if __name__ == "__main__":
-	app = BentExplorerApp()
-	app.mainloop()
-	#app.destroy()
+    app = BentExplorerApp()
+    app.mainloop()
+    #app.destroy()
