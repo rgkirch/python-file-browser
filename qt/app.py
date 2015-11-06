@@ -9,8 +9,15 @@ class Thread(QThread):
         self.wait()
     def run(self):
         pass
-class Explorer(QtGui.QListWidget):
-    pass
+class ListWidget(QtGui.QListWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        print( "list widget init" )
+    def replaceItems(self, items):
+        self.clear()
+        self.addItems(items)
+
 
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -21,11 +28,15 @@ class BentExplorerApp(QtGui.QMainWindow):
         """
         super().__init__(parent)
         self.widgets = []
-        self.widgets.append(Explorer())
-        self.setCentralWidget(QtGui.QStackedWidget())
+        # explorerapp central widget is stacked widget with explorerapp as parent
+        self.setCentralWidget(QtGui.QStackedWidget(self))
+        # add widget to widgets list, widget has stacked widget as parent
+        self.widgets.append(ListWidget(self.centralWidget()))
+        # add widgets to stacked widget
         for widget in self.widgets:
             self.centralWidget().addWidget(widget)
         self.centralWidget().setCurrentIndex(0)
+        self.centralWidget().currentWidget().replaceItems(["one","two","three"])
 
         #centralWidget.setCurrentWidget(self.centralWidget().widget(0))
         #self.centralWidget().widget(0).hide()
