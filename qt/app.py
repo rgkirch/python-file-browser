@@ -13,6 +13,7 @@ class Thread(QThread):
         self.wait()
     def run(self):
         pass
+
 class ListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -24,6 +25,8 @@ class ListWidget(QtGui.QListWidget):
         for item in items:
             self.addItem(item)
 
+class FileObject():
+    pass
 class Default():
     default_directory = os.path.expanduser("~/")
     error = "Error: "
