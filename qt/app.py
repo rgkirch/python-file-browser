@@ -1,6 +1,7 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
-import sys, os, dis
+import sys, os, dis, stat
+from enum import Enum, unique
 
 # notes, should handle files as 'file objects' not just strings
 # should be able to query file.isdir or file.size
@@ -13,6 +14,9 @@ class Thread(QThread):
         self.wait()
     def run(self):
         pass
+@unique
+class Type(Enum):
+    UNSET, FILE, DIR = range(3)
 
 class ListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
@@ -35,6 +39,23 @@ class Default():
             color = QtGui.QColor.blue
         class folder():
             color = QtGui.QColor.black
+
+class FileItem():
+    item_type = Type.UNSET
+    item_md5 = Type.UNSET
+
+    def __init__(self, path_to_file):
+        # future: pass in options for things you want like 'hash=true'
+        if os.path.exists(path_to_file):
+            if os.path.isfile():
+                self.item_type=Type.FILE
+            else if os.path.isdir():
+                self.item_type=Type.DIR
+            else:
+                print("FileItem constructor, not file or dir")
+        else:
+            print("FileItem constructor, path {0} not exist".format(path_to_file))
+    def hash(self)
 
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
