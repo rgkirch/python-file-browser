@@ -17,6 +17,8 @@ class Thread(QThread):
 @unique
 class Type(Enum):
     UNSET, FILE, DIR = range(3)
+class Style():
+    pass
 
 class ListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
@@ -29,8 +31,6 @@ class ListWidget(QtGui.QListWidget):
         for item in items:
             self.addItem(item)
 
-class FileObject():
-    pass
 class Default():
     default_directory = os.path.expanduser("~/")
     error = "Error: "
@@ -43,7 +43,6 @@ class Default():
 class FileItem():
     item_type = Type.UNSET
     item_md5 = Type.UNSET
-
     def __init__(self, path_to_file):
         # future: pass in options for things you want like 'hash=true'
         if os.path.exists(path_to_file):
@@ -55,7 +54,14 @@ class FileItem():
                 print("FileItem constructor, not file or dir")
         else:
             print("FileItem constructor, path {0} not exist".format(path_to_file))
-    def hash(self)
+    @property
+    def item_md5(self):
+        if self.item_md5 == Type.UNSET:
+            #self.item_md5 = hash.md5()
+            return item_md5
+        else:
+            return item_md5
+
 
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
