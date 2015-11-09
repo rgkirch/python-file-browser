@@ -1,7 +1,8 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
-import sys, os, dis, stat, itertools
+import sys, os, stat, itertools
 from enum import Enum, unique
+from pathlib import Path
 
 # notes, should handle files as 'file objects' not just strings
 # should be able to query file.isdir or file.size
@@ -14,9 +15,10 @@ class Thread(QThread):
         self.wait()
     def run(self):
         pass
+
 @unique
 class Type(Enum):
-    UNSET, FILE, DIR = range(3)
+    UNSET, DIR, FILE = range(3)
 
 class Style():
     pass
@@ -25,15 +27,17 @@ class ListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-    def replaceItems(self, items):
+
+    def populateWidget(self, path):
         self.clear()
-        # additem is overloaded for strings and listWidgetItems
-        # additems only works for strings
-        for item in items:
+        for item in map(FileItem, path.iterdir()):
             self.addItem(item)
+        self.sortItems()
+        self.sortItems()
 
 class Default():
-    default_directory = os.path.expanduser("~/")
+    default_directory = Path(os.path.expanduser("~"))
+    #default_directory = Path("~").expanduser()
     error = "Error: "
     class style():
         class directory():
@@ -44,20 +48,28 @@ class Default():
 class FileItem(QtGui.QListWidgetItem):
     item_type = Type.UNSET
     item_md5 = Type.UNSET
-    def __init__(self, path_to_file):
+    def __init__(self, path):
         super().__init__()
         # future: pass in options for things you want like 'hash=true'
-        self.setText(path_to_file)
-        if os.path.exists(path_to_file):
-            if os.path.isfile(path_to_file):
-                self.item_type=Type.FILE
-            elif os.path.isdir(path_to_file):
-                self.item_type=Type.DIR
-                self.setTextColor("blue")
-            else:
-                print("FileItem constructor, not file or dir")
+        self.setText(path.name)
+        if path.is_file():
+            self.item_type=Type.FILE
+        elif path.is_dir():
+            self.item_type=Type.DIR
+            self.setTextColor(QtGui.QColor("blue"))
         else:
-            print("FileItem constructor, path {0} not exist".format(path_to_file))
+            print("FileItem constructor, not file or dir")
+
+    def __lt__(self, other):
+        if self.item_type == Type.DIR and other.item_type == Type.FILE:
+            return True
+        elif self.item_type == Type.FILE and other.item_type == Type.DIR:
+            return False
+        elif self.item_type == other.item_type:
+            return str(self) < str(other)
+        else:
+            print("error, file item lt")
+
     @property
     def item_md5(self):
         if self.item_md5 == Type.UNSET:
@@ -65,15 +77,15 @@ class FileItem(QtGui.QListWidgetItem):
             return item_md5
         else:
             return item_md5
+
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
         """
         >>> self.populateWidget("hello", "hi")
         """
         super().__init__(parent)
-        self.default = Default()
         self.widgets = []
-        self.current_directory = self.default.default_directory
+        self.current_directory = Default.default_directory
         # explorerapp central widget is stacked widget with explorerapp as parent
         self.setCentralWidget(QtGui.QStackedWidget(self))
         # add widget to widgets list, widget has stacked widget as parent
@@ -85,22 +97,8 @@ class BentExplorerApp(QtGui.QMainWindow):
         #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
         self.show()
-        self.populateWidget( self.centralWidget().currentWidget(), self.current_directory )
+        self.centralWidget().currentWidget().populateWidget(self.current_directory)
 
-    def populateWidget(self, list_widget, directory):
-        try:
-            file_list = os.listdir( directory )
-            if file_list:
-                #file_list = list( map( FileItem, map(lambda y: , file_list) ) )
-            list_widget.replaceItems( file_list )
-        except FileNotFoundError:
-            self.directory = self.default.default_directory
-            print("FileNotFoundError:", self.default.error, "BentExplorerApp, populate(), listdir(not a valid dir)", file=sys.stderr)
-        except:
-            if isinstance( list_widget, QtGui.QListWidget ) and isinstance( directory, str ):
-                print("something went wrong, BentExplorerApp, populateWidget()", file=sys.stderr)
-            else:
-                print("default exception:", "BentExplorerApp, populate expected params of type\n{0} and {1} but got params of type\n{2} and {3}".format( QtGui.QListWidget, str, type(list_widget), type(directory)), file=sys.stderr)
 
 
 
