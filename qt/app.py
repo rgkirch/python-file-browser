@@ -9,6 +9,7 @@ from pathlib import Path
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
 
 class Thread(QThread):
+    """later"""
     def __init__(self):
         QThread.__init__(self)
     def __del__(self):
@@ -18,17 +19,17 @@ class Thread(QThread):
 
 @unique
 class Type(Enum):
+    """Just for types, not to be instantiated."""
     UNSET, DIR, FILE = range(3)
-
-class Style():
-    pass
+    def __init__(self):
+        pass
 
 class ListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
 
-    def populateWidget(self, path):
+    def populate_widget(self, path):
         self.clear()
         for item in map(FileItem, path.iterdir()):
             self.addItem(item)
@@ -61,6 +62,7 @@ class FileItem(QtGui.QListWidgetItem):
             print("FileItem constructor, not file or dir")
 
     def __lt__(self, other):
+        return self < other
         if self.item_type == Type.DIR and other.item_type == Type.FILE:
             return True
         elif self.item_type == Type.FILE and other.item_type == Type.DIR:
@@ -81,7 +83,7 @@ class FileItem(QtGui.QListWidgetItem):
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
         """
-        >>> self.populateWidget("hello", "hi")
+        >>> self.populate_widget("hello", "hi")
         """
         super().__init__(parent)
         self.widgets = []
@@ -97,7 +99,7 @@ class BentExplorerApp(QtGui.QMainWindow):
         #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
         self.show()
-        self.centralWidget().currentWidget().populateWidget(self.current_directory)
+        self.centralWidget().currentWidget().populate_widget(self.current_directory)
 
 
 
