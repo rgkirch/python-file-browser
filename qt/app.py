@@ -8,6 +8,7 @@ from pathlib import Path
 # should be able to query file.isdir or file.size
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
 
+
 class Thread(QThread):
     """later"""
     def __init__(self):
@@ -21,8 +22,6 @@ class Thread(QThread):
 class Type(Enum):
     """Just for types, not to be instantiated."""
     UNSET, DIR, FILE = range(3)
-    def __init__(self):
-        pass
 
 class ListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
@@ -33,7 +32,6 @@ class ListWidget(QtGui.QListWidget):
         self.clear()
         for item in map(FileItem, path.iterdir()):
             self.addItem(item)
-        self.sortItems()
         self.sortItems()
 
 class Default():
@@ -62,13 +60,12 @@ class FileItem(QtGui.QListWidgetItem):
             print("FileItem constructor, not file or dir")
 
     def __lt__(self, other):
-        return self < other
         if self.item_type == Type.DIR and other.item_type == Type.FILE:
             return True
         elif self.item_type == Type.FILE and other.item_type == Type.DIR:
             return False
         elif self.item_type == other.item_type:
-            return str(self) < str(other)
+            return self.text() < other.text()
         else:
             print("error, file item lt")
 
