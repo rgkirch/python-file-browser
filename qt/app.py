@@ -48,7 +48,7 @@ class FileItem():
         if os.path.exists(path_to_file):
             if os.path.isfile():
                 self.item_type=Type.FILE
-            else if os.path.isdir():
+            elif os.path.isdir():
                 self.item_type=Type.DIR
             else:
                 print("FileItem constructor, not file or dir")
