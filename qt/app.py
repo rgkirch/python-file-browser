@@ -48,6 +48,7 @@ class Default():
 
 class FileItem(QtGui.QListWidgetItem):
     path = None
+    item_type = None
     def __init__(self, path):
         super().__init__()
         # future: pass in options for things you want like 'hash=true'
@@ -55,35 +56,20 @@ class FileItem(QtGui.QListWidgetItem):
         # set listWidgetItem display text
         self.setText(path.name)
         # temporary implementation of property setting
-        if self.item_type == Type.DIR:
+        if path.is_file():
+            self.item_type = Type.FILE
+        elif path.is_dir:
+            self.item_type = Type.DIR
             self.setTextColor(QtGui.QColor("blue"))
 
     def __lt__(self, other):
         if self.item_type == other.item_type:
-            return self.text < other.text
+            return str(self.path) < str(other.path)
         else:
             return self.item_type < other.item_type
 
-    @property
-    def name(self):
-        return self.path.name()
-
-    @property
-    def text(self):
-        return str(self.path)
-
-    @property
-    def item_type(self):
-        if self.path.is_file():
-            return Type.FILE
-        elif self.path.is_dir:
-            return Type.DIR
-
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        """
-        >>> self.populate_widget("hello", "hi")
-        """
         super().__init__(parent)
         self.widgets = []
         self.current_directory = Default.default_directory
