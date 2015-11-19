@@ -10,13 +10,14 @@ from pathlib import Path
 
 
 class Thread(QThread):
-    """later"""
     def __init__(self):
         QThread.__init__(self)
     def __del__(self):
         self.wait()
     def run(self):
-        pass
+        print("hello")
+        window = QtGui.QMainWindow()
+        window.show()
 
 @unique
 class Type(Enum):
@@ -26,8 +27,10 @@ class Type(Enum):
         return self.value < other.value
 
 class ListWidget(QtGui.QListWidget):
+    parent = None
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
 
     def populate_widget(self, path):
@@ -35,6 +38,22 @@ class ListWidget(QtGui.QListWidget):
         for item in map(FileItem, path.iterdir()):
             self.addItem(item)
         self.sortItems()
+
+    def event(self, event):
+        handled = super().event(event)
+        if isinstance(event, QtGui.QKeyEvent):
+            #print(event.key())
+            pass
+        elif isinstance(event, QtGui.QContextMenuEvent):
+            self.contextMenu(event)
+        return handled
+
+    def contextMenu(self, event):
+        contextMenu = QtGui.QMenu()
+        contextMenuEntries = []
+        contextMenu.addAction("test one")
+        contextMenu.addAction("test two")
+        contextMenu.exec_(QtGui.QCursor.pos())
 
 class Default():
     default_directory = Path(os.path.expanduser("~"))
@@ -68,6 +87,9 @@ class FileItem(QtGui.QListWidgetItem):
         else:
             return self.item_type < other.item_type
 
+    def __str__(self):
+        return str(self.path)
+
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -83,13 +105,21 @@ class BentExplorerApp(QtGui.QMainWindow):
         self.centralWidget().setCurrentIndex(0)
         #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
+
+        exitAction = QtGui.QAction(QtGui.QIcon('exit.png'), '&Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(QtGui.qApp.quit)
+
+        self.menuBar()
+
         self.show()
         self.centralWidget().currentWidget().populate_widget(self.current_directory)
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
     window = BentExplorerApp()
-    window.show()
+    #window.show()
     app.exec_()
 
 if __name__ == '__main__':
