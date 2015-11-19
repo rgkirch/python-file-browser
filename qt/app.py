@@ -1,5 +1,6 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
+from PyQt4.QtCore import SIGNAL
 import sys, os, stat, itertools
 from enum import Enum, unique
 from pathlib import Path
@@ -39,21 +40,23 @@ class ListWidget(QtGui.QListWidget):
             self.addItem(item)
         self.sortItems()
 
-    def event(self, event):
-        handled = super().event(event)
-        if isinstance(event, QtGui.QKeyEvent):
-            #print(event.key())
-            pass
-        elif isinstance(event, QtGui.QContextMenuEvent):
-            self.contextMenu(event)
-        return handled
-
-    def contextMenu(self, event):
+    def contextMenuEvent(self, event):
+        def someFunction(self):
+            print("hello")
         contextMenu = QtGui.QMenu()
-        contextMenuEntries = []
-        contextMenu.addAction("test one")
-        contextMenu.addAction("test two")
+        contextMenuActions = []
+        contextMenuActions.append(QtGui.QAction("test one", self))
+        contextMenuActions.append(QtGui.QAction("test two", self))
+        contextMenuActions[0].connect(contextMenuActions[0], SIGNAL('contextMenuEvent(const QPoint&)'), someFunction)
+        contextMenu.addActions(contextMenuActions)
         contextMenu.exec_(QtGui.QCursor.pos())
+
+    def KeyEvent(self):
+        #handled = super().event(event)
+        pass
+
+    def ContextMenuEvent(self):
+        pass
 
 class Default():
     default_directory = Path(os.path.expanduser("~"))
@@ -110,8 +113,13 @@ class BentExplorerApp(QtGui.QMainWindow):
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(QtGui.qApp.quit)
+        menu = QtGui.QMenu("menu", self)
+        quitAction = QtGui.QAction("exit", menu)
+        menu.addAction(quitAction)
+        #self.connect(quitAction, QtGui.QAction.trigger, QtGui.qApp.quit)
+        self.menuBar().addMenu(menu)
 
-        self.menuBar()
+        #text = QtGui.QInputDialog.getText(self, "title", "lable")
 
         self.show()
         self.centralWidget().currentWidget().populate_widget(self.current_directory)
