@@ -1,9 +1,16 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import QThread
-import sys, os, dis
-import hellothere, checkbox
+import sys, os, stat, itertools
+from enum import Enum, unique
+from pathlib import Path
+
+# notes, should handle files as 'file objects' not just strings
+# should be able to query file.isdir or file.size
+# could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
+
 
 class Thread(QThread):
+    """later"""
     def __init__(self):
         QThread.__init__(self)
     def __del__(self):
@@ -11,56 +18,73 @@ class Thread(QThread):
     def run(self):
         pass
 
-class Hellothere( QtGui.QWidget, hellothere.Ui_Form ):
-    def __init__(self, parent):
-        super().__init__()
-        super().setupUi(parent)
+@unique
+class Type(Enum):
+    """Just for types, not to be instantiated."""
+    DIR, FILE, UNSET = list(range(3))
+    def __lt__(self, other):
+        return self.value < other.value
 
-class Checkbox( QtGui.QWidget, checkbox.Ui_Form ):
-    def __init__(self, parent):
+class ListWidget(QtGui.QListWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+
+    def populate_widget(self, path):
+        self.clear()
+        for item in map(FileItem, path.iterdir()):
+            self.addItem(item)
+        self.sortItems()
+
+class Default():
+    default_directory = Path(os.path.expanduser("~"))
+    #default_directory = Path("~").expanduser()
+    error = "Error: "
+    class style():
+        class directory():
+            color = QtGui.QColor.blue
+        class folder():
+            color = QtGui.QColor.black
+
+class FileItem(QtGui.QListWidgetItem):
+    path = None
+    item_type = None
+    def __init__(self, path):
         super().__init__()
-        super().setupUi(parent)
+        # future: pass in options for things you want like 'hash=true'
+        self.path = path
+        # set listWidgetItem display text
+        self.setText(path.name)
+        # temporary implementation of property setting
+        if path.is_file():
+            self.item_type = Type.FILE
+        elif path.is_dir:
+            self.item_type = Type.DIR
+            self.setTextColor(QtGui.QColor("blue"))
+
+    def __lt__(self, other):
+        if self.item_type == other.item_type:
+            return str(self.path) < str(other.path)
+        else:
+            return self.item_type < other.item_type
 
 class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        """
-        >>> self.ui = listbox.Ui_rootWindow()
-        >>> print( "self", type( self ) )
-        ('self', <class '__main__.App'>)
-        """
         super().__init__(parent)
-        self.stacked_layout = QtGui.QStackedLayout()
-        #self.stacked_layout.addWidget(Hellothere(hello))
-        #self.stacked_layout.addWidget(Checkbox(check))
-        self.stacked_layout.addWidget(hellothere.Ui_Form())
-        self.stacked_layout.addWidget(checkbox.Ui_Form())
-        self.central_widget = QtGui.QWidget()
-        self.central_widget.setLayout(self.stacked_layout)
-        self.setCentralWidget(self.central_widget)
-        self.stacked_layout.setCurrentIndex(0)
-        #centralWidget.setCurrentWidget(self.centralWidget().widget(0))
-        #self.centralWidget().widget(0).hide()
-
-        #self.rootWindow = rootWindow.Ui_rootWindow()
-        #self.widgets.append( self.rootWidget )
-        #self.fileList = fileList.Ui_filelist()
-        #self.widgets.append( self.fileList )
-
-        #self.setupUi(self, self.widgets)
-
-        #self.rootWidget.gridLayout.addItem( self.fileList )
-
-        #self.ui.btnBrowse.clicked.connect(self.browse_folder)
-        #self.ui.actionAppQuit.triggered.connect(QtGui.qApp.quit)
-        #self.ui.actionAppQuit.setShortcut("q")
+        self.widgets = []
+        self.current_directory = Default.default_directory
+        # explorerapp central widget is stacked widget with explorerapp as parent
+        self.setCentralWidget(QtGui.QStackedWidget(self))
+        # add widget to widgets list, widget has stacked widget as parent
+        self.widgets.append(ListWidget(self.centralWidget()))
+        # add widgets to stacked widget
+        for widget in self.widgets:
+            self.centralWidget().addWidget(widget)
+        self.centralWidget().setCurrentIndex(0)
+        #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
         self.show()
-    def browse_folder(self):
-        self.ui.listWidget.clear()
-        directory = QtGui.QFileDialog.getExistingDirectory(self,"Pick a folder")
-        if directory:
-            for file_name in os.listdir(directory): 
-                self.ui.listWidget.addItem(file_name)
+        self.centralWidget().currentWidget().populate_widget(self.current_directory)
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
