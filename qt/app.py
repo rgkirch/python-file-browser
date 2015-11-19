@@ -27,6 +27,14 @@ class Type(Enum):
     def __lt__(self, other):
         return self.value < other.value
 
+#class contextMenu(QtGui.QMenu):
+#    contextMenuActions = []
+#    def __init__(self, *argv):
+#        super.__init__(*argv)
+#        self.contextMenuActions.append(QtGui.QAction("test one", self))
+#        self.contextMenuActions[0].trigger = lambda y: print("hello")
+#        self.contextMenuActions.append(QtGui.QAction("test two", self))
+
 class ListWidget(QtGui.QListWidget):
     parent = None
     def __init__(self, parent=None):
@@ -41,20 +49,16 @@ class ListWidget(QtGui.QListWidget):
         self.sortItems()
 
     def contextMenuEvent(self, event):
-        contextMenu = QtGui.QMenu()
         contextMenuActions = []
-        contextMenuActions.append(QtGui.QAction("test one", self))
-        contextMenuActions.append(QtGui.QAction("test two", self))
+        contextMenu = QtGui.QMenu()
+        contextMenuActions.append(QtGui.QAction("name", self))
+        contextMenuActions.append(QtGui.QAction("number", self))
+        contextMenuActions[0].go = lambda: print(self.selection())
+        contextMenuActions[1].go = lambda: QtGui.QMessageBox()
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
         print(contextMenuActions.index(action))
-
-    def KeyEvent(self):
-        #handled = super().event(event)
-        pass
-
-    def ContextMenuEvent(self):
-        pass
+        action.go()
 
 class Default():
     default_directory = Path(os.path.expanduser("~"))
