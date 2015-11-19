@@ -41,15 +41,13 @@ class ListWidget(QtGui.QListWidget):
         self.sortItems()
 
     def contextMenuEvent(self, event):
-        def someFunction(self):
-            print("hello")
         contextMenu = QtGui.QMenu()
         contextMenuActions = []
         contextMenuActions.append(QtGui.QAction("test one", self))
         contextMenuActions.append(QtGui.QAction("test two", self))
-        contextMenuActions[0].connect(contextMenuActions[0], SIGNAL('contextMenuEvent(const QPoint&)'), someFunction)
         contextMenu.addActions(contextMenuActions)
-        contextMenu.exec_(QtGui.QCursor.pos())
+        action = contextMenu.exec_(QtGui.QCursor.pos())
+        print(contextMenuActions.index(action))
 
     def KeyEvent(self):
         #handled = super().event(event)
