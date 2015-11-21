@@ -5,6 +5,8 @@ import sys, os, stat, itertools
 from enum import Enum, unique
 from pathlib import Path
 
+import searchInterface
+
 # notes, should handle files as 'file objects' not just strings
 # should be able to query file.isdir or file.size
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
@@ -110,20 +112,22 @@ class BentExplorerApp(QtGui.QMainWindow):
         #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
 
-        exitAction = QtGui.QAction(QtGui.QIcon('exit.png'), '&Exit', self)
-        exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(QtGui.qApp.quit)
-        menu = QtGui.QMenu("menu", self)
-        quitAction = QtGui.QAction("exit", menu)
-        menu.addAction(quitAction)
-        #self.connect(quitAction, QtGui.QAction.trigger, QtGui.qApp.quit)
-        self.menuBar().addMenu(menu)
-
+        self.setupMenuBar()
         #text = QtGui.QInputDialog.getText(self, "title", "lable")
 
         self.show()
         self.centralWidget().currentWidget().populate_widget(self.current_directory)
+
+    def setupMenuBar(self):
+        menu = QtGui.QMenu("menu", self)
+        search = QtGui.QMenu("search", self)
+        actions = []
+        actions.append(QtGui.QAction("current directory", menu))
+        actions[-1].triggered.connect(searchInterface.getSearchResults(str(self.current_directory), QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")))
+        actions.append(QtGui.QAction("subdirectories", menu))
+        actions[-1].triggered.connect(QtGui.qApp.quit)
+        menu.addAction(quitAction)
+        self.menuBar().addMenu(menu)
 
     def actionZip(self, items):
         """If one of them is a zip, append to the zip."""

@@ -21,6 +21,7 @@ except:
 setDatabase('history.db')
 
 def getSearchResults(directory, searchString, includeSubDirs = False):
+    print(directory, searchString)
     results = []
     for parent, dirs, files in os.walk(directory):
         regex = re.compile(searchString);
