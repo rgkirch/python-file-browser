@@ -51,14 +51,13 @@ class ListWidget(QtGui.QListWidget):
     def contextMenuEvent(self, event):
         contextMenuActions = []
         contextMenu = QtGui.QMenu()
-        contextMenuActions.append(QtGui.QAction("name", self))
-        contextMenuActions.append(QtGui.QAction("number", self))
-        contextMenuActions[0].go = lambda: print(self.selection())
-        contextMenuActions[1].go = lambda: QtGui.QMessageBox()
+        contextMenuActions.append(QtGui.QAction("zip", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.parent.actionZip(self.selectedItems()))
+        contextMenuActions.append(QtGui.QAction("print hello", self))
+        contextMenuActions[-1].triggered.connect(lambda: print("hello"))
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
-        print(contextMenuActions.index(action))
-        action.go()
+        #print(contextMenuActions.index(action))
 
 class Default():
     default_directory = Path(os.path.expanduser("~"))
@@ -103,7 +102,7 @@ class BentExplorerApp(QtGui.QMainWindow):
         # explorerapp central widget is stacked widget with explorerapp as parent
         self.setCentralWidget(QtGui.QStackedWidget(self))
         # add widget to widgets list, widget has stacked widget as parent
-        self.widgets.append(ListWidget(self.centralWidget()))
+        self.widgets.append(ListWidget(self))
         # add widgets to stacked widget
         for widget in self.widgets:
             self.centralWidget().addWidget(widget)
@@ -125,6 +124,12 @@ class BentExplorerApp(QtGui.QMainWindow):
 
         self.show()
         self.centralWidget().currentWidget().populate_widget(self.current_directory)
+
+    def actionZip(self, items):
+        """If one of them is a zip, append to the zip."""
+        print("zip these files:")
+        for it in items:
+            print("\t", it)
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
