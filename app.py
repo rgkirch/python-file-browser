@@ -123,10 +123,10 @@ class BentExplorerApp(QtGui.QMainWindow):
         search = QtGui.QMenu("search", self)
         actions = []
         actions.append(QtGui.QAction("current directory", menu))
-        actions[-1].triggered.connect(searchInterface.getSearchResults(str(self.current_directory), QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")))
-        actions.append(QtGui.QAction("subdirectories", menu))
+        actions[-1].triggered.connect(lambda: searchInterface.getSearchResults(str(self.current_directory), QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")))
+        actions.append(QtGui.QAction("quit", menu))
         actions[-1].triggered.connect(QtGui.qApp.quit)
-        menu.addAction(quitAction)
+        menu.addActions(actions)
         self.menuBar().addMenu(menu)
 
     def actionZip(self, items):
