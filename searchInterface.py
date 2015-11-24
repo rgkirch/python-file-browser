@@ -22,6 +22,8 @@ setDatabase('history.db')
 
 def getSearchResults(user, directory, searchString, includeSubDirs = False):
     results = []
+    userObj = UserObject(user)
+    srch = SearchObject(userObj.userID, searchString, None, directory, includeSubDirs)
     for parent, dirs, files in os.walk(directory):
         regex = re.compile(searchString);
         for found in files:
@@ -29,10 +31,14 @@ def getSearchResults(user, directory, searchString, includeSubDirs = False):
                 results += [os.path.join(parent, found)]
         if not includeSubDirs:
             break;
+    if (results):
+        srch.addMatchesOnly(results)
     return tuple(results)
 
 def getPotentialRenames(user, directory, searchString, replaceRegex, includeSubDirs = False):
     results = {}
+    userObj = UserObject(user)
+    srch = SearchObject(userObj.userID, searchString, replaceRegex, directory, includeSubDirs)
     for parent, dirs, files in os.walk(directory):
         regex = re.compile(searchString);
         for found in files:
@@ -40,6 +46,10 @@ def getPotentialRenames(user, directory, searchString, replaceRegex, includeSubD
                 results[os.path.join(parent, found)] = os.path.join(parent, re.sub(searchString, replaceRegex, found))
         if not includeSubDirs:
             break;
+    if (results):
+        #get list to ensure order for matching files to new files
+        searched = list(results.keys())
+        srch.addRenamePairs(searched, [results[k] for k in searched])
     return results
 
 def renameFiles(user, renameResults):
