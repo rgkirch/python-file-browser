@@ -20,7 +20,7 @@ except:
 
 setDatabase('history.db')
 
-def getSearchResults(directory, searchString, includeSubDirs = False):
+def getSearchResults(user, directory, searchString, includeSubDirs = False):
     results = []
     for parent, dirs, files in os.walk(directory):
         regex = re.compile(searchString);
@@ -31,7 +31,7 @@ def getSearchResults(directory, searchString, includeSubDirs = False):
             break;
     return tuple(results)
 
-def getPotentialRenames(directory, searchString, replaceRegex, includeSubDirs = False):
+def getPotentialRenames(user, directory, searchString, replaceRegex, includeSubDirs = False):
     results = {}
     for parent, dirs, files in os.walk(directory):
         regex = re.compile(searchString);
@@ -42,7 +42,7 @@ def getPotentialRenames(directory, searchString, replaceRegex, includeSubDirs = 
             break;
     return results
 
-def renameFiles(renameResults):
+def renameFiles(user, renameResults):
     for key in renameResults.keys():
         os.rename(key, renameResults[key])
 
