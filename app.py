@@ -1,7 +1,8 @@
 from PyQt4 import QtGui
-from PyQt4.QtCore import QThread
-from PyQt4.QtCore import SIGNAL
-import sys, os, stat, itertools
+from PyQt4 import QtCore
+#from PyQt4.QtCore import QThread
+#from PyQt4.QtCore import SIGNAL
+import sys, os, stat
 from enum import Enum, unique
 from pathlib import Path
 
@@ -12,15 +13,15 @@ import searchInterface
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
 
 
-class Thread(QThread):
-    def __init__(self):
-        QThread.__init__(self)
-    def __del__(self):
-        self.wait()
-    def run(self):
-        print("hello")
-        window = QtGui.QMainWindow()
-        window.show()
+#class Thread(QThread):
+#    def __init__(self):
+#        QThread.__init__(self)
+#    def __del__(self):
+#        self.wait()
+#    def run(self):
+#        print("hello")
+#        window = QtGui.QMainWindow()
+#        window.show()
 
 @unique
 class Type(Enum):
@@ -43,6 +44,11 @@ class ListWidget(QtGui.QListWidget):
         super().__init__(parent)
         self.parent = parent
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self.doubleClicked.connect(self.select)
+
+    def select(self):
+        print("selected")
+        print(self.selectedItems())
 
     def populate_widget(self, path):
         self.clear()
@@ -53,17 +59,21 @@ class ListWidget(QtGui.QListWidget):
     def contextMenuEvent(self, event):
         contextMenuActions = []
         contextMenu = QtGui.QMenu()
-        contextMenuActions.append(QtGui.QAction("zip", self))
+        contextMenuActions.append(QtGui.QAction("create new zip", self))
         contextMenuActions[-1].triggered.connect(lambda: self.parent.actionZip(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("print hello", self))
-        contextMenuActions[-1].triggered.connect(lambda: print("hello"))
+        #contextMenuActions[-1].triggered.connect(lambda: print("hello"))
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
         #print(contextMenuActions.index(action))
 
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Return:
+            print(self.selectedItems())
+
 class Default():
-    default_directory = Path(os.path.expanduser("~"))
-    #default_directory = Path("~").expanduser()
+    #default_directory = Path(os.path.expanduser("~"))
+    default_directory = Path(os.path.expanduser(os.getcwd()))
     error = "Error: "
     class style():
         class directory():
@@ -123,17 +133,33 @@ class BentExplorerApp(QtGui.QMainWindow):
         search = QtGui.QMenu("search", self)
         actions = []
         actions.append(QtGui.QAction("current directory", menu))
-        actions[-1].triggered.connect(lambda: searchInterface.getSearchResults(str(self.current_directory), QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")))
+        actions[-1].triggered.connect(self.searchPrompt)
         actions.append(QtGui.QAction("quit", menu))
         actions[-1].triggered.connect(QtGui.qApp.quit)
         menu.addActions(actions)
         self.menuBar().addMenu(menu)
 
+    def searchPrompt(self):
+        string, bool = QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")
+        if bool and string:
+            result = searchInterface.getSearchResults(str(self.current_directory), str(string))
+        print(result)
+
     def actionZip(self, items):
-        """If one of them is a zip, append to the zip."""
-        print("zip these files:")
-        for it in items:
-            print("\t", it)
+        """Creates new zip file."""
+        name,ok = QtGui.QInputDialog.getText(self, "zip files", "enter name of new zip file")
+        if ok and name:
+            if name in os.listdir(self.current_directory):
+                overwrite = QtGui.QMessageBox(this)
+                overwrite.setText("the file "+name+" already exists in the current directory")
+                overwrite.setInformativeText("Do you want to overwrite the file?")
+                
+
+            else:
+                print("zip these files:")
+                for it in items:
+                    print("\t", it)
+
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
