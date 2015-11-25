@@ -149,12 +149,12 @@ class BentExplorerApp(QtGui.QMainWindow):
         """Creates new zip file."""
         name,ok = QtGui.QInputDialog.getText(self, "zip files", "enter name of new zip file")
         if ok and name:
-            if name in os.listdir(self.current_directory):
-                overwrite = QtGui.QMessageBox(this)
-                overwrite.setText("the file "+name+" already exists in the current directory")
-                overwrite.setInformativeText("Do you want to overwrite the file?")
-                
-
+            if name in os.listdir(str(self.current_directory)):
+                overwrite_confirm = QtGui.QMessageBox(self)
+                overwrite_confirm.setText("the file "+name+" already exists in the current directory")
+                overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
+                overwrite = overwrite_confirm.exec_()
+                print(overwrite)
             else:
                 print("zip these files:")
                 for it in items:
