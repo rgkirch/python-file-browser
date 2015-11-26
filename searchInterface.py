@@ -1,8 +1,22 @@
 from searchObjects import *
-import os, re
-import zipfile, zlib
+import os
+import re
+import zipfile
 
-compression = zipfile.ZIP_DEFLATED
+compression = zipfile.ZIP_STORED
+try:
+    import lzma
+    compression = zipfile.ZIP_LZMA
+except:
+    try:
+        import bz2
+        compression = zipfile.ZIP_BZIP2
+    except:
+        try:
+            import zlib
+            compression = zipfile.ZIP_DEFLATED
+        except:
+            pass
 
 setDatabase('history.db')
 
@@ -45,7 +59,6 @@ def renameFiles(user, renameResults):
 '''creates a new zip - will truncate any existing zipName. Files is a list of filenames'''
 def createNewZip(zipName, files):
     with zipfile.ZipFile(zipName, 'w', compression) as zipper:
-        print("compression", compression)
         for filename in files:
             zipper.write(filename);
 
