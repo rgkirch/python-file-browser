@@ -1,24 +1,27 @@
 from PyQt4 import QtGui
-from PyQt4.QtCore import QThread
-from PyQt4.QtCore import SIGNAL
-import sys, os, stat, itertools
+from PyQt4 import QtCore
+#from PyQt4.QtCore import QThread
+#from PyQt4.QtCore import SIGNAL
+import sys, os, stat
 from enum import Enum, unique
 from pathlib import Path
+
+import searchInterface
 
 # notes, should handle files as 'file objects' not just strings
 # should be able to query file.isdir or file.size
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
 
 
-class Thread(QThread):
-    def __init__(self):
-        QThread.__init__(self)
-    def __del__(self):
-        self.wait()
-    def run(self):
-        print("hello")
-        window = QtGui.QMainWindow()
-        window.show()
+#class Thread(QThread):
+#    def __init__(self):
+#        QThread.__init__(self)
+#    def __del__(self):
+#        self.wait()
+#    def run(self):
+#        print("hello")
+#        window = QtGui.QMainWindow()
+#        window.show()
 
 @unique
 class Type(Enum):
@@ -37,12 +40,22 @@ class Type(Enum):
 
 class ListWidget(QtGui.QListWidget):
     parent = None
+    lastpath = None
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self.doubleClicked.connect(self.select)
 
-    def populate_widget(self, path):
+    def select(self):
+        print("selected")
+        print(self.selectedItems())
+
+    def populate_widget(self, path=None):
+        if not path:
+            path = self.lastpath
+        else:
+            self.lastpath = path
         self.clear()
         for item in map(FileItem, path.iterdir()):
             self.addItem(item)
@@ -51,17 +64,22 @@ class ListWidget(QtGui.QListWidget):
     def contextMenuEvent(self, event):
         contextMenuActions = []
         contextMenu = QtGui.QMenu()
-        contextMenuActions.append(QtGui.QAction("zip", self))
+        contextMenuActions.append(QtGui.QAction("create new zip", self))
         contextMenuActions[-1].triggered.connect(lambda: self.parent.actionZip(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("print hello", self))
-        contextMenuActions[-1].triggered.connect(lambda: print("hello"))
+        #contextMenuActions[-1].triggered.connect(lambda: print("hello"))
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
         #print(contextMenuActions.index(action))
+        self.populate_widget()
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Return:
+            print(self.selectedItems())
 
 class Default():
-    default_directory = Path(os.path.expanduser("~"))
-    #default_directory = Path("~").expanduser()
+    #default_directory = Path(os.path.expanduser("~"))
+    default_directory = Path(os.path.expanduser(os.getcwd()))
     error = "Error: "
     class style():
         class directory():
@@ -110,26 +128,56 @@ class BentExplorerApp(QtGui.QMainWindow):
         #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
 
-        exitAction = QtGui.QAction(QtGui.QIcon('exit.png'), '&Exit', self)
-        exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(QtGui.qApp.quit)
-        menu = QtGui.QMenu("menu", self)
-        quitAction = QtGui.QAction("exit", menu)
-        menu.addAction(quitAction)
-        #self.connect(quitAction, QtGui.QAction.trigger, QtGui.qApp.quit)
-        self.menuBar().addMenu(menu)
-
+        self.setupMenuBar()
         #text = QtGui.QInputDialog.getText(self, "title", "lable")
 
         self.show()
         self.centralWidget().currentWidget().populate_widget(self.current_directory)
 
+    def setupMenuBar(self):
+        menu = QtGui.QMenu("menu", self)
+        search = QtGui.QMenu("search", self)
+        actions = []
+        actions.append(QtGui.QAction("current directory", menu))
+        actions[-1].triggered.connect(self.searchPrompt)
+        actions.append(QtGui.QAction("quit", menu))
+        actions[-1].triggered.connect(QtGui.qApp.quit)
+        menu.addActions(actions)
+        self.menuBar().addMenu(menu)
+
+    def searchPrompt(self):
+        string, bool = QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")
+        if bool and string:
+            result = searchInterface.getSearchResults(str(self.current_directory), str(string))
+        print(result)
+
     def actionZip(self, items):
-        """If one of them is a zip, append to the zip."""
-        print("zip these files:")
-        for it in items:
-            print("\t", it)
+        """Creates new zip file."""
+        name,ok = QtGui.QInputDialog.getText(self, "zip files", "enter name of new zip file")
+        # user clicked ok and entered a string
+        if ok and name:
+            if not name.endswith(".zip"):
+                name += ".zip"
+            # already file of same name
+            if name in os.listdir(str(self.current_directory)):
+                overwrite_confirm = QtGui.QMessageBox(self)
+                overwrite_confirm.setText("the file "+name+" already exists in the current directory")
+                overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
+                overwrite_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+                overwrite = overwrite_confirm.exec_()
+                if overwrite == QtGui.QMessageBox.Ok:
+                    # backup name so can delete it later
+                    old_name = name
+                    while name in os.listdir(str(self.current_directory)): 
+                        name += ".tmp"
+                    name = os.path.join(os.getcwd(), name)
+                    searchInterface.createNewZip(name, list(map(str, items)))
+                    # rename to remove .tmp
+                    os.remove(old_name)
+                    os.rename(name, old_name)
+            else:
+                name = os.path.join(os.getcwd(), name)
+                searchInterface.createNewZip(name, list(map(str, items)))
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
