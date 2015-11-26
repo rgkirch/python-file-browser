@@ -154,20 +154,30 @@ class BentExplorerApp(QtGui.QMainWindow):
     def actionZip(self, items):
         """Creates new zip file."""
         name,ok = QtGui.QInputDialog.getText(self, "zip files", "enter name of new zip file")
+        # user clicked ok and entered a string
         if ok and name:
-            overwrite = True
             if not name.endswith(".zip"):
                 name += ".zip"
+            # already file of same name
             if name in os.listdir(str(self.current_directory)):
                 overwrite_confirm = QtGui.QMessageBox(self)
                 overwrite_confirm.setText("the file "+name+" already exists in the current directory")
                 overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
                 overwrite_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
                 overwrite = overwrite_confirm.exec_()
-                overwrite = overwrite == QtGui.QMessageBox.Ok
-            if overwrite:
-                name = os.path.join(os.getcwd(),name)
-                #searchInterface.createNewZip(name, list(map(str, items)))
+                if overwrite == QtGui.QMessageBox.Ok:
+                    # backup name so can delete it later
+                    old_name = name
+                    while name in os.listdir(str(self.current_directory)): 
+                        name += ".tmp"
+                    name = os.path.join(os.getcwd(), name)
+                    searchInterface.createNewZip(name, list(map(str, items)))
+                    # rename to remove .tmp
+                    os.remove(old_name)
+                    os.rename(name, old_name)
+            else:
+                name = os.path.join(os.getcwd(), name)
+                searchInterface.createNewZip(name, list(map(str, items)))
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
