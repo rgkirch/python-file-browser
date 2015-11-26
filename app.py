@@ -183,6 +183,7 @@ def main():
     app = QtGui.QApplication(sys.argv[1:])
     window = BentExplorerApp()
     #window.show()
+    app.setFont(QtGui.QFont("monospace", 14))
     app.exec_()
 
 if __name__ == '__main__':
