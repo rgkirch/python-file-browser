@@ -45,11 +45,35 @@ class ListWidget(QtGui.QListWidget):
         super().__init__(parent)
         self.parent = parent
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        self.doubleClicked.connect(self.select)
+        self.doubleClicked.connect(self.primary)
 
-    def select(self):
-        print("selected")
-        print(self.selectedItems())
+    def primary(self):
+        items = self.selectedItems()
+        if len(items) == 1:
+            if items[0].item_type == Type.DIR:
+                self.folder_primary(items[0])
+            elif items[0].item_type == Type.FILE:
+                self.file_primary(items[0])
+            else:
+                print("file type unmanaged")
+        return None
+
+    def folder_primary(self, item):
+        self.parent.status_last_command( "cd " + str(abs_path) )
+        #print( "cd", path)
+        self.navigate_to_absolute_path( abs_path )
+        return None
+
+    def file_primary(self, item):
+        if sys.platform == "linux" or sys.platform == "linux2":
+            #os.system( "xdg-open " + path )
+            os.popen( "xdg-open " + path.replace(" ","\ ") )
+        elif sys.platform == "win32":
+            os.popen( "start " + path.replace(" ","\ ") )
+        elif sys.platform == "darwin":
+            #print("NotImplemented", file=sys.stderr)
+            os.popen("" + path.replace(" ","\ "))
+        return None
 
     def populate_widget(self, path=None):
         if not path:
@@ -77,14 +101,14 @@ class ListWidget(QtGui.QListWidget):
         if event.key() == QtCore.Qt.Key_Return:
             print(self.selectedItems())
 
-class Default():
+class Default:
     #default_directory = Path(os.path.expanduser("~"))
     default_directory = Path(os.path.expanduser(os.getcwd()))
     error = "Error: "
-    class style():
-        class directory():
+    class style:
+        class directory:
             color = QtGui.QColor.blue
-        class folder():
+        class folder:
             color = QtGui.QColor.black
 
 class FileItem(QtGui.QListWidgetItem):
