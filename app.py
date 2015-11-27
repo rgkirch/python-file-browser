@@ -8,6 +8,10 @@ from pathlib import Path
 
 import searchInterface
 
+# show history from database
+# when select prev search of do new search
+# show stuff in current view
+
 # notes, should handle files as 'file objects' not just strings
 # should be able to query file.isdir or file.size
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
@@ -55,17 +59,16 @@ class ListWidget(QtGui.QListWidget):
         super().__init__(parent)
         self.parent = parent
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        self.doubleClicked.connect(self.primary)
+        self.doubleClicked.connect(lambda: self.primary())
 
-    def primary(self):
-        items = self.selectedItems()
+    def primary(self, items=None):
+        if not items:
+            items = self.selectedItems()
         if len(items) == 1:
             if items[0].item_type == Type.DIR:
                 self.folder_primary(items[0])
-            elif items[0].item_type == Type.FILE:
-                self.file_primary(items[0])
-            else:
-                print("file type unmanaged")
+        if items[0].item_type == Type.FILE:
+            self.file_primary(items[0])
 
     def folder_primary(self, item):
         self.populate_widget(item.path)
@@ -90,10 +93,10 @@ class ListWidget(QtGui.QListWidget):
     def contextMenuEvent(self, event):
         contextMenuActions = []
         contextMenu = QtGui.QMenu()
-        contextMenuActions.append(QtGui.QAction("create new zip", self))
-        contextMenuActions[-1].triggered.connect(lambda: self.parent.actionZip(self.selectedItems()))
-        contextMenuActions.append(QtGui.QAction("print hello", self))
-        #contextMenuActions[-1].triggered.connect(lambda: print("hello"))
+        contextMenuActions.append(QtGui.QAction("create new zip from files", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.actionZip(self.selectedItems()))
+        contextMenuActions.append(QtGui.QAction("remove spaces from filename", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.parent.renameWithoutSpaces(self.selectedItems()))
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
         #print(contextMenuActions.index(action))
@@ -101,7 +104,41 @@ class ListWidget(QtGui.QListWidget):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
-            print(self.selectedItems())
+            self.primary(self.selectedItems())
+        elif event.key() == QtCore.Qt.Key_Backspace:
+            self.populate_widget(self.path.parent)
+        else:
+            super().keyPressEvent(event)
+
+    def actionZip(self, items):
+        """Creates new zip file."""
+        name,ok = QtGui.QInputDialog.getText(self, "zip files", "enter name of new zip file")
+        # user clicked ok and entered a string
+        if ok and name:
+            if not name.endswith(".zip"):
+                name += ".zip"
+            # already file of same name
+            if name in os.listdir(str(self.path.absolute())):
+                overwrite_confirm = QtGui.QMessageBox(self)
+                overwrite_confirm.setText("the file "+name+" already exists in the current directory")
+                overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
+                overwrite_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+                overwrite = overwrite_confirm.exec_()
+                if overwrite == QtGui.QMessageBox.Ok:
+                    # backup name so can delete it later
+                    old_name = name
+                    while name in os.listdir(str(self.current_directory)): 
+                        name += ".tmp"
+                    name = os.path.join(os.getcwd(), name)
+                    searchInterface.createNewZip(name, list(map(str, items)))
+                    # rename to remove .tmp
+                    os.remove(old_name)
+                    os.rename(name, old_name)
+            else:
+                name = os.path.join(os.getcwd(), name)
+                searchInterface.createNewZip(name, list(map(str, items)))
+    def renameWithoutSpaces(self, items):
+        pass
 
 class FileItem(QtGui.QListWidgetItem):
     path = None
@@ -154,7 +191,7 @@ class BentExplorerApp(QtGui.QMainWindow):
         menu = QtGui.QMenu("menu", self)
         search = QtGui.QMenu("search", self)
         actions = []
-        actions.append(QtGui.QAction("current directory", menu))
+        actions.append(QtGui.QAction("regex search", menu))
         actions[-1].triggered.connect(self.searchPrompt)
         actions.append(QtGui.QAction("quit", menu))
         actions[-1].triggered.connect(QtGui.qApp.quit)
@@ -173,33 +210,6 @@ class BentExplorerApp(QtGui.QMainWindow):
             result = searchInterface.getSearchResults(0, directory, str(string))
         print(result)
 
-    def actionZip(self, items):
-        """Creates new zip file."""
-        name,ok = QtGui.QInputDialog.getText(self, "zip files", "enter name of new zip file")
-        # user clicked ok and entered a string
-        if ok and name:
-            if not name.endswith(".zip"):
-                name += ".zip"
-            # already file of same name
-            if name in os.listdir(str(self.current_directory)):
-                overwrite_confirm = QtGui.QMessageBox(self)
-                overwrite_confirm.setText("the file "+name+" already exists in the current directory")
-                overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
-                overwrite_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
-                overwrite = overwrite_confirm.exec_()
-                if overwrite == QtGui.QMessageBox.Ok:
-                    # backup name so can delete it later
-                    old_name = name
-                    while name in os.listdir(str(self.current_directory)): 
-                        name += ".tmp"
-                    name = os.path.join(os.getcwd(), name)
-                    searchInterface.createNewZip(name, list(map(str, items)))
-                    # rename to remove .tmp
-                    os.remove(old_name)
-                    os.rename(name, old_name)
-            else:
-                name = os.path.join(os.getcwd(), name)
-                searchInterface.createNewZip(name, list(map(str, items)))
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
