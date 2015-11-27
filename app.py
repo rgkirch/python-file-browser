@@ -38,9 +38,19 @@ class Type(Enum):
 #        self.contextMenuActions[0].trigger = lambda y: print("hello")
 #        self.contextMenuActions.append(QtGui.QAction("test two", self))
 
+class Default:
+    #default_directory = Path(os.path.expanduser("~"))
+    default_directory = Path(os.path.expanduser(os.getcwd()))
+    error = "Error: "
+    class style:
+        class directory:
+            color = QtGui.QColor.blue
+        class folder:
+            color = QtGui.QColor.black
+
 class ListWidget(QtGui.QListWidget):
     parent = None
-    lastpath = None
+    path = Default.default_directory 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
@@ -56,32 +66,24 @@ class ListWidget(QtGui.QListWidget):
                 self.file_primary(items[0])
             else:
                 print("file type unmanaged")
-        return None
 
     def folder_primary(self, item):
-        self.parent.status_last_command( "cd " + str(abs_path) )
-        #print( "cd", path)
-        self.navigate_to_absolute_path( abs_path )
-        return None
+        self.populate_widget(item.path)
 
     def file_primary(self, item):
         if sys.platform == "linux" or sys.platform == "linux2":
-            #os.system( "xdg-open " + path )
-            os.popen( "xdg-open " + path.replace(" ","\ ") )
+            os.popen( "xdg-open " + str(item.path.absolute()).replace(" ","\ ") )
         elif sys.platform == "win32":
-            os.popen( "start " + path.replace(" ","\ ") )
+            os.popen( "start " + str(item.path.absolute()).replace(" ","\ ") )
         elif sys.platform == "darwin":
             #print("NotImplemented", file=sys.stderr)
-            os.popen("" + path.replace(" ","\ "))
-        return None
+            os.popen("" + item.text().replace(" ","\ "))
 
     def populate_widget(self, path=None):
-        if not path:
-            path = self.lastpath
-        else:
-            self.lastpath = path
+        if path:
+            self.path = path
         self.clear()
-        for item in map(FileItem, path.iterdir()):
+        for item in map(FileItem, self.path.iterdir()):
             self.addItem(item)
         self.sortItems()
 
@@ -100,16 +102,6 @@ class ListWidget(QtGui.QListWidget):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
             print(self.selectedItems())
-
-class Default:
-    #default_directory = Path(os.path.expanduser("~"))
-    default_directory = Path(os.path.expanduser(os.getcwd()))
-    error = "Error: "
-    class style:
-        class directory:
-            color = QtGui.QColor.blue
-        class folder:
-            color = QtGui.QColor.black
 
 class FileItem(QtGui.QListWidgetItem):
     path = None
@@ -140,11 +132,11 @@ class BentExplorerApp(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.widgets = []
-        self.current_directory = Default.default_directory
         # explorerapp central widget is stacked widget with explorerapp as parent
         self.setCentralWidget(QtGui.QStackedWidget(self))
         # add widget to widgets list, widget has stacked widget as parent
         self.widgets.append(ListWidget(self))
+        self.widgets.append(QtGui.QListWidget(self))
         # add widgets to stacked widget
         for widget in self.widgets:
             self.centralWidget().addWidget(widget)
@@ -156,7 +148,7 @@ class BentExplorerApp(QtGui.QMainWindow):
         #text = QtGui.QInputDialog.getText(self, "title", "lable")
 
         self.show()
-        self.centralWidget().currentWidget().populate_widget(self.current_directory)
+        self.widgets[0].populate_widget()
 
     def setupMenuBar(self):
         menu = QtGui.QMenu("menu", self)
@@ -172,7 +164,13 @@ class BentExplorerApp(QtGui.QMainWindow):
     def searchPrompt(self):
         string, bool = QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")
         if bool and string:
-            result = searchInterface.getSearchResults(str(self.current_directory), str(string))
+            if isinstance(self.centralWidget().currentWidget(), ListWidget):
+                #print(self.centralWidget().currentWidget(), " is an instance of ", ListWidget)
+                directory = str(self.centralWidget().currentWidget().path)
+            else:
+                #print(self.centralWidget().currentWidget(), " is not an instance of ", ListWidget)
+                directory = QtGui.QFileDialog.getExistingDirectory()
+            result = searchInterface.getSearchResults(0, directory, str(string))
         print(result)
 
     def actionZip(self, items):
