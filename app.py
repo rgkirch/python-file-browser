@@ -7,6 +7,7 @@ from enum import Enum, unique
 from pathlib import Path
 
 import searchInterface
+import searchObjects
 
 # show history from database
 # when select prev search of do new search
@@ -61,10 +62,10 @@ class SearchesWidget(QtGui.QListWidget):
     def select(self):
         items = self.selectedItems()
 
-    def populate(self):
-        self.clear()
-        self.addItem(item)
-        self.sortItems()
+    #def populate(self):
+    #    self.clear()
+    #    self.addItem(item)
+    #    self.sortItems()
 
 class ListWidget(QtGui.QListWidget):
     parent = None
@@ -95,6 +96,12 @@ class ListWidget(QtGui.QListWidget):
         elif sys.platform == "darwin":
             #print("NotImplemented", file=sys.stderr)
             os.popen("" + item.text().replace(" ","\ "))
+
+    def replaceItems(self, items):
+        self.clear()
+        for item in map(FileItem, items):
+            self.addItem(item)
+        self.sortItems()
 
     def populate_widget(self, path=None):
         if path:
@@ -154,31 +161,20 @@ class ListWidget(QtGui.QListWidget):
     def renameWithoutSpaces(self, items):
         pass
 
-class InputDialog(QtGui.QInputDialog):
-    def __init__(self):
-        super().__init__()
-        layout = QtGui.QVBoxLayout(self)
-        self.text = QtGui.QPlainTextEdit()
-        self.check = QtGui.QCheckBox()
-        layout.addWidget(self.text)
-        layout.addWidget(self.check)
-        buttons = QtGui.QDialogButtonBox( QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel, QtCore.Qt.Horizontal, self)
-        buttons.accepted.connect(self.accept)
-        buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
-        self.show()
-
 class FileItem(QtGui.QListWidgetItem):
     path = None
     item_type = None
     def __init__(self, path):
         super().__init__()
         # future: pass in options for things you want like 'hash=true'
-        self.path = path
+        if(isinstance(path, str)):
+            self.path = Path(path)
+        else:
+            self.path = path
         # set listWidgetItem display text
-        self.setText(path.name)
+        self.setText(self.path.name)
         # temporary implementation of property setting
-        if path.is_file():
+        if self.path.is_file():
             self.item_type = Type.FILE
         elif path.is_dir:
             self.item_type = Type.DIR
@@ -200,11 +196,11 @@ class BentExplorerApp(QtGui.QMainWindow):
         # explorerapp central widget is stacked widget with explorerapp as parent
         self.setCentralWidget(QtGui.QStackedWidget(self))
         # add widget to widgets list, widget has stacked widget as parent
-        self.widgets.append(ListWidget(self))
-        self.widgets.append(SearchesWidget(self))
+        self.listwidget = ListWidget(self)
+        self.searchwidget = SearchesWidget(self)
         # add widgets to stacked widget
-        for widget in self.widgets:
-            self.centralWidget().addWidget(widget)
+        self.centralWidget().addWidget(self.listwidget)
+        self.centralWidget().addWidget(self.searchwidget)
         self.centralWidget().setCurrentIndex(0)
         #self.centralWidget().currentWidget().replaceItems(["one","two","three"])
         self.setWindowTitle("Bent File Explorer")
@@ -213,10 +209,14 @@ class BentExplorerApp(QtGui.QMainWindow):
         #text = QtGui.QInputDialog.getText(self, "title", "lable")
 
         self.show()
-        self.widgets[0].populate_widget()
+        self.listwidget.populate_widget()
 
     def setIndex(self, index):
-        self.centralWidget().setCurrentIndex(index)
+        if(index == 1):
+            items = searchObjects.SearchObject.getSearchesByUser(0)
+            self.searchwidget.replaceItems(items)
+        else:
+            self.centralWidget().setCurrentIndex(index)
 
     def setupMenuBar(self):
         menu = QtGui.QMenu("menu", self)
@@ -231,11 +231,12 @@ class BentExplorerApp(QtGui.QMainWindow):
         actions[-1].triggered.connect(lambda: self.searchPrompt(True))
         actions.append(QtGui.QAction("regex search in current directory", menu))
         actions[-1].triggered.connect(lambda: self.searchPrompt(False))
+        search.addActions(actions)
         actions = []
         actions.append(QtGui.QAction("browser", menu))
-        actions[-1].triggered.connect(self.setIndex(0))
+        actions[-1].triggered.connect(lambda: self.setIndex(0))
         actions.append(QtGui.QAction("past searches", menu))
-        actions[-1].triggered.connect(self.setIndex(1))
+        actions[-1].triggered.connect(lambda: self.setIndex(1))
         view.addActions(actions)
         self.menuBar().addMenu(menu)
         self.menuBar().addMenu(search)
@@ -251,7 +252,7 @@ class BentExplorerApp(QtGui.QMainWindow):
                 #print(self.centralWidget().currentWidget(), " is not an instance of ", ListWidget)
                 directory = QtGui.QFileDialog.getExistingDirectory()
             result = searchInterface.getSearchResults(0, directory, str(string), recursive)
-        print(result)
+            self.listwidget.replaceItems(result)
 
 
 def main():
