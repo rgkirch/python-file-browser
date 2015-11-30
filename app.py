@@ -52,6 +52,20 @@ class Default:
         class folder:
             color = QtGui.QColor.black
 
+class SearchesWidget(QtGui.QListWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.doubleClicked.connect(lambda: self.select())
+
+    def select(self):
+        items = self.selectedItems()
+
+    def populate(self):
+        self.clear()
+        self.addItem(item)
+        self.sortItems()
+
 class ListWidget(QtGui.QListWidget):
     parent = None
     path = Default.default_directory 
@@ -140,6 +154,20 @@ class ListWidget(QtGui.QListWidget):
     def renameWithoutSpaces(self, items):
         pass
 
+class InputDialog(QtGui.QInputDialog):
+    def __init__(self):
+        super().__init__()
+        layout = QtGui.QVBoxLayout(self)
+        self.text = QtGui.QPlainTextEdit()
+        self.check = QtGui.QCheckBox()
+        layout.addWidget(self.text)
+        layout.addWidget(self.check)
+        buttons = QtGui.QDialogButtonBox( QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel, QtCore.Qt.Horizontal, self)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+        self.show()
+
 class FileItem(QtGui.QListWidgetItem):
     path = None
     item_type = None
@@ -173,7 +201,7 @@ class BentExplorerApp(QtGui.QMainWindow):
         self.setCentralWidget(QtGui.QStackedWidget(self))
         # add widget to widgets list, widget has stacked widget as parent
         self.widgets.append(ListWidget(self))
-        self.widgets.append(QtGui.QListWidget(self))
+        self.widgets.append(SearchesWidget(self))
         # add widgets to stacked widget
         for widget in self.widgets:
             self.centralWidget().addWidget(widget)
@@ -187,18 +215,33 @@ class BentExplorerApp(QtGui.QMainWindow):
         self.show()
         self.widgets[0].populate_widget()
 
+    def setIndex(self, index):
+        self.centralWidget().setCurrentIndex(index)
+
     def setupMenuBar(self):
         menu = QtGui.QMenu("menu", self)
         search = QtGui.QMenu("search", self)
+        view = QtGui.QMenu("view", self)
         actions = []
-        actions.append(QtGui.QAction("regex search", menu))
-        actions[-1].triggered.connect(self.searchPrompt)
         actions.append(QtGui.QAction("quit", menu))
         actions[-1].triggered.connect(QtGui.qApp.quit)
         menu.addActions(actions)
+        actions = []
+        actions.append(QtGui.QAction("recursive regex search", menu))
+        actions[-1].triggered.connect(lambda: self.searchPrompt(True))
+        actions.append(QtGui.QAction("regex search in current directory", menu))
+        actions[-1].triggered.connect(lambda: self.searchPrompt(False))
+        actions = []
+        actions.append(QtGui.QAction("browser", menu))
+        actions[-1].triggered.connect(self.setIndex(0))
+        actions.append(QtGui.QAction("past searches", menu))
+        actions[-1].triggered.connect(self.setIndex(1))
+        view.addActions(actions)
         self.menuBar().addMenu(menu)
+        self.menuBar().addMenu(search)
+        self.menuBar().addMenu(view)
 
-    def searchPrompt(self):
+    def searchPrompt(self, recursive):
         string, bool = QtGui.QInputDialog.getText(self, "enter search string", "searches are fun")
         if bool and string:
             if isinstance(self.centralWidget().currentWidget(), ListWidget):
@@ -207,7 +250,7 @@ class BentExplorerApp(QtGui.QMainWindow):
             else:
                 #print(self.centralWidget().currentWidget(), " is not an instance of ", ListWidget)
                 directory = QtGui.QFileDialog.getExistingDirectory()
-            result = searchInterface.getSearchResults(0, directory, str(string))
+            result = searchInterface.getSearchResults(0, directory, str(string), recursive)
         print(result)
 
 
