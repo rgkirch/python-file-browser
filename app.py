@@ -53,10 +53,6 @@ class Default:
         class folder:
             color = QtGui.QColor.black
 
-class ItemWraperSearchObject(QtGui.QListWidgetItem):
-    def __init__(self, searchObject):
-        self.searchObject = searchObject
-
 class SearchesWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -76,10 +72,20 @@ class SearchesWidget(QtGui.QListWidget):
             temp.setText(str(temp.searchObject.searchString))
             self.addItem(temp)
 
-    #def populate(self):
-    #    self.clear()
-    #    self.addItem(item)
-    #    self.sortItems()
+    def rerun(self, items):
+        item = items[0]
+        so = item.searchObject
+        result = searchInterface.getSearchResults(so.userIdNum, so.directory, so.searchString, so.includeSubDirectories)
+        self.parent.listwidget.replaceItems(result)
+        self.parent.setIndex(0, refresh=False)
+
+    def contextMenuEvent(self, event):
+        contextMenuActions = []
+        contextMenu = QtGui.QMenu()
+        contextMenuActions.append(QtGui.QAction("re-run search", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.rerun(self.selectedItems()))
+        contextMenu.addActions(contextMenuActions)
+        action = contextMenu.exec_(QtGui.QCursor.pos())
 
 class ListWidget(QtGui.QListWidget):
     parent = None
@@ -125,11 +131,28 @@ class ListWidget(QtGui.QListWidget):
             self.addItem(item)
         self.sortItems()
 
+    def createNewFile(self):
+        name,ok = QtGui.QInputDialog.getText(self, "create empty file", "enter name of new file")
+        if ok and name:
+            os.chdir(str(self.path.absolute()))
+            os.mknod(name)
+
+    def deleteFiles(self, items):
+        os.chdir(str(self.path.absolute()))
+        for item in items:
+            os.remove(str(item.path.absolute()))
+
     def contextMenuEvent(self, event):
         contextMenuActions = []
         contextMenu = QtGui.QMenu()
+        contextMenuActions.append(QtGui.QAction("create new file", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.createNewFile())
+        contextMenuActions.append(QtGui.QAction("delete file(s)", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.deleteFiles(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("create new zip from files", self))
         contextMenuActions[-1].triggered.connect(lambda: self.actionZip(self.selectedItems()))
+        contextMenuActions.append(QtGui.QAction("unzip files", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.actionUnZip(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("remove spaces from filename", self))
         contextMenuActions[-1].triggered.connect(lambda: self.parent.renameWithoutSpaces(self.selectedItems()))
         contextMenu.addActions(contextMenuActions)
@@ -144,6 +167,9 @@ class ListWidget(QtGui.QListWidget):
             self.populate_widget(self.path.parent)
         else:
             super().keyPressEvent(event)
+
+    def actionUnZip(self, items):
+        pass
 
     def actionZip(self, items):
         """Creates new zip file."""
