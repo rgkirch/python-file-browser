@@ -34,9 +34,10 @@ class SearchObject:
         self._incSubDirs = searchSubDirs
         self._matches = []
         self._newnames = []
-        with HistoryDBInterface() as histIf:
-            histIf.upsert('INSERT INTO searches(user, search, replace, directory, searchSubDirs) values(?, ?, ?, ?, ?)', (self._userIdNum, self._searchString, self._replaceStr, self._dir, self._incSubDirs))
-            self._id = histIf.getOne('SELECT id FROM searches ORDER BY id DESC LIMIT 1')[0] 
+        if insert:
+            with HistoryDBInterface() as histIf:
+                histIf.upsert('INSERT INTO searches(user, search, replace, directory, searchSubDirs) values(?, ?, ?, ?, ?)', (self._userIdNum, self._searchString, self._replaceStr, self._dir, self._incSubDirs))
+                self._id = histIf.getOne('SELECT id FROM searches ORDER BY id DESC LIMIT 1')[0] 
 
     '''Returns a list of count (default 10) searches by user'''
     def getSearchesByUser(userIdNum, count = 10):

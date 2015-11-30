@@ -53,6 +53,10 @@ class Default:
         class folder:
             color = QtGui.QColor.black
 
+class ItemWraperSearchObject(QtGui.QListWidgetItem):
+    def __init__(self, searchObject):
+        self.searchObject = searchObject
+
 class SearchesWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -60,12 +64,17 @@ class SearchesWidget(QtGui.QListWidget):
         self.doubleClicked.connect(lambda: self.select())
 
     def select(self):
-        items = self.selectedItems()
+        item = self.selectedItems()[0]
+        self.parent.listwidget.replaceItems(item.searchObject.matchedFiles)
+        self.parent.setIndex(0, refresh=False)
 
     def replaceItems(self, items):
         self.clear()
-        self.addItems(item)
-        self.sortItems()
+        for item in items:
+            temp = QtGui.QListWidgetItem()
+            temp.searchObject = item
+            temp.setText(str(temp.searchObject.searchString))
+            self.addItem(temp)
 
     #def populate(self):
     #    self.clear()
@@ -161,8 +170,9 @@ class ListWidget(QtGui.QListWidget):
                     os.remove(old_name)
                     os.rename(name, old_name)
             else:
-                name = os.path.join(os.getcwd(), name)
+                name = os.path.join(str(self.path.absolute()), name)
                 searchInterface.createNewZip(name, list(map(str, items)))
+
     def renameWithoutSpaces(self, items):
         pass
 
@@ -216,12 +226,15 @@ class BentExplorerApp(QtGui.QMainWindow):
         self.show()
         self.listwidget.populate_widget()
 
-    def setIndex(self, index):
+    def setIndex(self, index, refresh=True):
         if(index == 1):
             items = searchObjects.SearchObject.getSearchesByUser(0)
             self.searchwidget.replaceItems(items)
+            self.centralWidget().setCurrentIndex(index)
         else:
             self.centralWidget().setCurrentIndex(index)
+            if refresh:
+                self.listwidget.populate_widget()
 
     def setupMenuBar(self):
         menu = QtGui.QMenu("menu", self)
