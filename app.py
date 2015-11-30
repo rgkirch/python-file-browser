@@ -62,6 +62,11 @@ class SearchesWidget(QtGui.QListWidget):
     def select(self):
         items = self.selectedItems()
 
+    def replaceItems(self, items):
+        self.clear()
+        self.addItems(item)
+        self.sortItems()
+
     #def populate(self):
     #    self.clear()
     #    self.addItem(item)
