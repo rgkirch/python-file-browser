@@ -337,20 +337,16 @@ class BentExplorerApp(QtGui.QMainWindow):
                 if rename == QtGui.QMessageBox.Ok:
                     # filter out empty string just in case path ended with '/'
                     thing = list(filter(lambda y: y, result[key].split("/")))[-1]
-                    print("thing", thing)
-                    print("in dir", os.listdir(directory))
-                    if thing in os.listdir(directory):
-                        print("thing in directory")
+                    # test for existance of file (for collision)
+                    if os.path.isfile(result[key]) or os.path.isdir(result[key]):
                         overwrite_confirm = QtGui.QMessageBox(self)
-                        overwrite_confirm.setText("the file "+thing+" already exists in the current directory")
+                        overwrite_confirm.setText("the file "+thing+" already exists in the directory")
                         overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
                         overwrite_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
                         overwrite = overwrite_confirm.exec_()
                         if overwrite == QtGui.QMessageBox.Ok:
+                            #searchInterface.renameFiles(result)
                             os.rename(key, result[key])
-            #searchInterface.renameFiles(result)
-            #self.listwidget.replaceItems(result) #delete
-
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
