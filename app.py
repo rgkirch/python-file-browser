@@ -137,6 +137,13 @@ class ListWidget(QtGui.QListWidget):
             os.chdir(str(self.path.absolute()))
             os.mknod(name)
 
+    def renameFilename(self, items):
+        item = items[0]
+        name,ok = QtGui.QInputDialog.getText(self, "rename file", "enter name of file")
+        if ok and name:
+            os.chdir(str(self.path.absolute()))
+            os.rename(str(item.path.absolute()), name)
+
     def deleteFiles(self, items):
         os.chdir(str(self.path.absolute()))
         for item in items:
@@ -147,6 +154,8 @@ class ListWidget(QtGui.QListWidget):
         contextMenu = QtGui.QMenu()
         contextMenuActions.append(QtGui.QAction("create new file", self))
         contextMenuActions[-1].triggered.connect(lambda: self.createNewFile())
+        contextMenuActions.append(QtGui.QAction("rename", self))
+        contextMenuActions[-1].triggered.connect(lambda: self.renameFilename(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("delete file(s)", self))
         contextMenuActions[-1].triggered.connect(lambda: self.deleteFiles(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("create new zip from files", self))
@@ -188,9 +197,9 @@ class ListWidget(QtGui.QListWidget):
                 if overwrite == QtGui.QMessageBox.Ok:
                     # backup name so can delete it later
                     old_name = name
-                    while name in os.listdir(str(self.current_directory)): 
+                    while name in os.listdir(str(self.path.absolute())): 
                         name += ".tmp"
-                    name = os.path.join(os.getcwd(), name)
+                    name = os.path.join(str(self.path.absolute()), name)
                     searchInterface.createNewZip(name, list(map(str, items)), str(self.path.absolute()))
                     # rename to remove .tmp
                     os.remove(old_name)
