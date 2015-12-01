@@ -127,6 +127,9 @@ class ListWidget(QtGui.QListWidget):
         if path:
             self.path = path
         self.clear()
+        dotdot = FileItem(self.path.parent)
+        dotdot.setText("..")
+        self.addItem(dotdot)
         for item in map(FileItem, self.path.iterdir()):
             self.addItem(item)
         self.sortItems()
