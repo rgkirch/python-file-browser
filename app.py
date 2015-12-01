@@ -169,7 +169,7 @@ class ListWidget(QtGui.QListWidget):
             super().keyPressEvent(event)
 
     def actionUnZip(self, items):
-        pass
+        searchInterface.extractZip(str(items[0]), str(self.path.absolute()))
 
     def actionZip(self, items):
         """Creates new zip file."""
@@ -191,13 +191,13 @@ class ListWidget(QtGui.QListWidget):
                     while name in os.listdir(str(self.current_directory)): 
                         name += ".tmp"
                     name = os.path.join(os.getcwd(), name)
-                    searchInterface.createNewZip(name, list(map(str, items)))
+                    searchInterface.createNewZip(name, list(map(str, items)), str(self.path.absolute()))
                     # rename to remove .tmp
                     os.remove(old_name)
                     os.rename(name, old_name)
             else:
                 name = os.path.join(str(self.path.absolute()), name)
-                searchInterface.createNewZip(name, list(map(str, items)))
+                searchInterface.createNewZip(name, list(map(str, items)), str(self.path.absolute()))
 
     def renameWithoutSpaces(self, items):
         pass

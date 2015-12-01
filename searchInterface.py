@@ -57,20 +57,22 @@ def renameFiles(user, renameResults):
         os.rename(key, renameResults[key])
 
 '''creates a new zip - will truncate any existing zipName. Files is a list of filenames'''
-def createNewZip(zipName, files):
+def createNewZip(zipName, files, directory = '.'):
+    os.chdir(directory)
     with zipfile.ZipFile(zipName, 'w', compression) as zipper:
         for filename in files:
-            zipper.write(filename);
+            zipper.write(os.path.relpath(filename, directory))
 
 '''If zipName exists, appends files to, else creates new'''
-def appendToZip(zipName, files):
+def appendToZip(zipName, files, directory = '.'):
+    os.chdir(directory)
     if not os.path.exists(zipName):
         mode = 'w'
     else:
         mode = 'a'
     with zipfile.ZipFile(zipName, mode, compression) as zipper:
         for filename in files:
-            zipper.write(filename);
+            zipper.write(os.path.relpath(filename, directory))
 
 '''Returns a list of filenames in zipName'''
 def getListOfFilesInZip(zipName):
