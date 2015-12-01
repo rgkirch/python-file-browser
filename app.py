@@ -292,6 +292,8 @@ class BentExplorerApp(QtGui.QMainWindow):
         actions[-1].triggered.connect(lambda: self.searchPrompt(True))
         actions.append(QtGui.QAction("regex search in current directory", menu))
         actions[-1].triggered.connect(lambda: self.searchPrompt(False))
+        actions.append(QtGui.QAction("regex recursive search and replace", menu))
+        actions[-1].triggered.connect(lambda: self.searchReplacePrompt(True))
         search.addActions(actions)
         actions = []
         actions.append(QtGui.QAction("browser", menu))
@@ -314,6 +316,40 @@ class BentExplorerApp(QtGui.QMainWindow):
                 directory = QtGui.QFileDialog.getExistingDirectory()
             result = searchInterface.getSearchResults(0, directory, str(string), recursive)
             self.listwidget.replaceItems(result)
+
+    def searchReplacePrompt(self, recursive):
+        search, boolone = QtGui.QInputDialog.getText(self, "search and replace", "enter string for search")
+        replace, booltwo = QtGui.QInputDialog.getText(self, "search and replace", "enter string for replace")
+        if boolone and booltwo and search:
+            if isinstance(self.centralWidget().currentWidget(), ListWidget):
+                #print(self.centralWidget().currentWidget(), " is an instance of ", ListWidget)
+                directory = str(self.centralWidget().currentWidget().path)
+            else:
+                #print(self.centralWidget().currentWidget(), " is not an instance of ", ListWidget)
+                directory = QtGui.QFileDialog.getExistingDirectory()
+            result = searchInterface.getPotentialRenames(0, directory, str(search), str(replace), recursive)
+            for key in result.keys():
+                rename_confirm = QtGui.QMessageBox(self)
+                rename_confirm.setText("going to rename\n{} to\n{}".format(key, result[key]))
+                rename_confirm.setInformativeText("Is this OK?")
+                rename_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+                rename = rename_confirm.exec_()
+                if rename == QtGui.QMessageBox.Ok:
+                    # filter out empty string just in case path ended with '/'
+                    thing = list(filter(lambda y: y, result[key].split("/")))[-1]
+                    print("thing", thing)
+                    print("in dir", os.listdir(directory))
+                    if thing in os.listdir(directory):
+                        print("thing in directory")
+                        overwrite_confirm = QtGui.QMessageBox(self)
+                        overwrite_confirm.setText("the file "+thing+" already exists in the current directory")
+                        overwrite_confirm.setInformativeText("Do you want to overwrite the file?")
+                        overwrite_confirm.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+                        overwrite = overwrite_confirm.exec_()
+                        if overwrite == QtGui.QMessageBox.Ok:
+                            os.rename(key, result[key])
+            #searchInterface.renameFiles(result)
+            #self.listwidget.replaceItems(result) #delete
 
 
 def main():
