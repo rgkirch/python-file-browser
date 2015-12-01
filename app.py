@@ -154,7 +154,7 @@ class ListWidget(QtGui.QListWidget):
         contextMenuActions.append(QtGui.QAction("unzip files", self))
         contextMenuActions[-1].triggered.connect(lambda: self.actionUnZip(self.selectedItems()))
         contextMenuActions.append(QtGui.QAction("remove spaces from filename", self))
-        contextMenuActions[-1].triggered.connect(lambda: self.parent.renameWithoutSpaces(self.selectedItems()))
+        contextMenuActions[-1].triggered.connect(lambda: self.renameWithoutSpaces(self.selectedItems()))
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
         #print(contextMenuActions.index(action))
@@ -200,7 +200,12 @@ class ListWidget(QtGui.QListWidget):
                 searchInterface.createNewZip(name, list(map(str, items)))
 
     def renameWithoutSpaces(self, items):
-        pass
+        for item in items:
+            os.chdir(str(item.path.parent.absolute()))
+            oldname = item.path.name
+            newname = oldname.replace(" ", "")
+            if newname not in os.listdir():
+                os.rename(oldname, newname)
 
 class FileItem(QtGui.QListWidgetItem):
     path = None
