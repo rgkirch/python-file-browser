@@ -181,7 +181,16 @@ class ListWidget(QtGui.QListWidget):
             super().keyPressEvent(event)
 
     def actionUnZip(self, items):
-        searchInterface.extractZip(str(items[0]), str(self.path.absolute()))
+        name = str(items[0].path.absolute())
+        if name.endswith(".zip"):
+            name = name[:-4]
+        num = 0
+        newname = name
+        while os.path.isfile(newname) or os.path.isdir(newname):
+            newname = name + str(num)
+            num += 1
+        os.mkdir(newname)
+        searchInterface.extractZip(str(items[0]), newname)
 
     def actionZip(self, items):
         """Creates new zip file."""
