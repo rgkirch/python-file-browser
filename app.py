@@ -294,6 +294,8 @@ class BentExplorerApp(QtGui.QMainWindow):
         actions[-1].triggered.connect(lambda: self.searchPrompt(False))
         actions.append(QtGui.QAction("regex recursive search and replace", menu))
         actions[-1].triggered.connect(lambda: self.searchReplacePrompt(True))
+        actions.append(QtGui.QAction("regex search and replace in current directory", menu))
+        actions[-1].triggered.connect(lambda: self.searchReplacePrompt(False))
         search.addActions(actions)
         actions = []
         actions.append(QtGui.QAction("browser", menu))
@@ -347,6 +349,10 @@ class BentExplorerApp(QtGui.QMainWindow):
                         if overwrite == QtGui.QMessageBox.Ok:
                             #searchInterface.renameFiles(result)
                             os.rename(key, result[key])
+                            self.listwidget.populate_widget()
+                    else:
+                        os.rename(key, result[key])
+                        self.listwidget.populate_widget()
 
 def main():
     app = QtGui.QApplication(sys.argv[1:])
