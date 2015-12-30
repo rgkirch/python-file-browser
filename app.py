@@ -5,14 +5,6 @@ from PyQt4 import QtCore
 import sys, os, stat
 from enum import Enum, unique
 from pathlib import Path
-
-import searchInterface
-import searchObjects
-
-# show history from database
-# when select prev search of do new search
-# show stuff in current view
-
 # notes, should handle files as 'file objects' not just strings
 # should be able to query file.isdir or file.size
 # could then pass to style() so that listWidgetItems can be made with dirs blue and stuff
@@ -42,16 +34,6 @@ class Type(Enum):
 #        self.contextMenuActions.append(QtGui.QAction("test one", self))
 #        self.contextMenuActions[0].trigger = lambda y: print("hello")
 #        self.contextMenuActions.append(QtGui.QAction("test two", self))
-
-class Default:
-    #default_directory = Path(os.path.expanduser("~"))
-    default_directory = Path(os.path.expanduser(os.getcwd()))
-    error = "Error: "
-    class style:
-        class directory:
-            color = QtGui.QColor.blue
-        class folder:
-            color = QtGui.QColor.black
 
 class SearchesWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
@@ -86,6 +68,7 @@ class SearchesWidget(QtGui.QListWidget):
         contextMenuActions[-1].triggered.connect(lambda: self.rerun(self.selectedItems()))
         contextMenu.addActions(contextMenuActions)
         action = contextMenu.exec_(QtGui.QCursor.pos())
+<<<<<<< HEAD
 
 class ListWidget(QtGui.QListWidget):
     parent = None
@@ -363,3 +346,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+=======
+>>>>>>> richie
